@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 import '../../constant/colors.dart';
 import '../../providers/transaction.dart';
 import '../../providers/user.dart';
-import 'package:intl/intl.dart';
 
 class UpdateCustomerScreen extends StatefulWidget {
   static const routeName = '/update-customer';
@@ -17,6 +18,7 @@ class UpdateCustomerScreen extends StatefulWidget {
 
 class _UpdateCustomerScreenState extends State<UpdateCustomerScreen> {
   final _formKey = GlobalKey<FormState>();
+
   String selectedValue = 'Monthly';
   bool changeCustIdIS = false;
   DateTime? selectedDate;
@@ -45,25 +47,25 @@ class _UpdateCustomerScreenState extends State<UpdateCustomerScreen> {
     panCard: "",
     pinCode: "",
     staffName: "",
+    limit: '',
+    whatsappNo: '',
   );
 
   _selectDate() {
     showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime(1800),
-            lastDate: DateTime.now())
-        .then(
-      (pickedDate) {
-        if (pickedDate == null) {
-          return;
-        }
-        setState(() {
-          now = pickedDate;
-          selectedDate = new DateTime(now.year, now.month, now.day);
-        });
-      },
-    );
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1800),
+      lastDate: DateTime.now(),
+    ).then((pickedDate) {
+      if (pickedDate == null) {
+        return;
+      }
+      setState(() {
+        now = pickedDate;
+        selectedDate = new DateTime(now.year, now.month, now.day);
+      });
+    });
   }
 
   @override
@@ -83,34 +85,40 @@ class _UpdateCustomerScreenState extends State<UpdateCustomerScreen> {
     balanceCnttrl.text = widget.user!['balance'].toString();
     selectedValue = widget.user!['schemeType'];
 
+    limitController.text = widget.user!['limit'] ?? '';
+
     setState(() {
       selectedDate = widget.user!['dateofBirth'].toDate();
     });
     // print(selectedDate);
     _user = UserModel(
-        name: _user.name,
-        custId: _user.custId,
-        phoneNo: _user.phoneNo,
-        address: _user.address,
-        place: _user.place,
-        mailId: _user.mailId,
-        schemeType: selectedValue,
-        balance: _user.balance,
-        id: _user.id,
-        staffId: _user.staffId,
-        token: _user.token,
-        totalGram: _user.totalGram,
-        branch: _user.branch,
-        dateofBirth: selectedDate == null
-            ? DateTime(now.year, now.month, now.day)
-            : selectedDate!,
-        nominee: _user.nominee,
-        nomineePhone: _user.nomineePhone,
-        nomineeRelation: _user.nomineeRelation,
-        adharCard: _user.adharCard,
-        panCard: _user.panCard,
-        pinCode: _user.pinCode,
-        staffName: _user.staffName);
+      name: _user.name,
+      custId: _user.custId,
+      phoneNo: _user.phoneNo,
+      address: _user.address,
+      place: _user.place,
+      mailId: _user.mailId,
+      schemeType: selectedValue,
+      balance: _user.balance,
+      id: _user.id,
+      staffId: _user.staffId,
+      token: _user.token,
+      totalGram: _user.totalGram,
+      branch: _user.branch,
+      dateofBirth:
+          selectedDate == null
+              ? DateTime(now.year, now.month, now.day)
+              : selectedDate!,
+      nominee: _user.nominee,
+      nomineePhone: _user.nomineePhone,
+      nomineeRelation: _user.nomineeRelation,
+      adharCard: _user.adharCard,
+      panCard: _user.panCard,
+      pinCode: _user.pinCode,
+      staffName: _user.staffName,
+      limit: limitController.text,
+      whatsappNo: _user.whatsappNo,
+    );
   }
 
   Future<void> _delete() async {
@@ -119,38 +127,40 @@ class _UpdateCustomerScreenState extends State<UpdateCustomerScreen> {
         Provider.of<User>(context, listen: false).delete(widget.user!['id']);
         await showDialog(
           context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('Succes!'),
-            content: Text('Deleted Successfully'),
-            actions: <Widget>[
-              OutlinedButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  // Navigator.pushReplacement(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => CustomerScreen()));
-                  setState(() {});
-                },
-              )
-            ],
-          ),
+          builder:
+              (ctx) => AlertDialog(
+                title: Text('Succes!'),
+                content: Text('Deleted Successfully'),
+                actions: <Widget>[
+                  OutlinedButton(
+                    child: Text('Okay'),
+                    onPressed: () {
+                      // Navigator.pushReplacement(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => CustomerScreen()));
+                      setState(() {});
+                    },
+                  ),
+                ],
+              ),
         );
       } catch (err) {
         await showDialog(
           context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('An error occurred!'),
-            content: Text('Something went wrong. ${err}'),
-            actions: <Widget>[
-              OutlinedButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              )
-            ],
-          ),
+          builder:
+              (ctx) => AlertDialog(
+                title: Text('An error occurred!'),
+                content: Text('Something went wrong. ${err}'),
+                actions: <Widget>[
+                  OutlinedButton(
+                    child: Text('Okay'),
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                    },
+                  ),
+                ],
+              ),
         );
       }
       setState(() {
@@ -169,36 +179,42 @@ class _UpdateCustomerScreenState extends State<UpdateCustomerScreen> {
       return;
     }
     _user = UserModel(
-        name: _user.name,
-        custId: _user.custId,
-        phoneNo: _user.phoneNo,
-        address: _user.address,
-        place: _user.place,
-        mailId: _user.mailId,
-        schemeType: _user.schemeType,
-        balance: _user.balance,
-        id: _user.id,
-        staffId: _user.staffId,
-        token: _user.token,
-        totalGram: _user.totalGram,
-        branch: _user.branch,
-        dateofBirth: selectedDate == null
-            ? DateTime(now.year, now.month, now.day)
-            : selectedDate!,
-        nominee: _user.nominee,
-        nomineePhone: _user.nomineePhone,
-        nomineeRelation: _user.nomineeRelation,
-        adharCard: _user.adharCard,
-        panCard: _user.panCard,
-        pinCode: _user.pinCode,
-        staffName: _user.staffName);
+      name: _user.name,
+      custId: _user.custId,
+      phoneNo: _user.phoneNo,
+      address: _user.address,
+      place: _user.place,
+      mailId: _user.mailId,
+      schemeType: _user.schemeType,
+      balance: _user.balance,
+      id: _user.id,
+      staffId: _user.staffId,
+      token: _user.token,
+      totalGram: _user.totalGram,
+      branch: _user.branch,
+      dateofBirth:
+          selectedDate == null
+              ? DateTime(now.year, now.month, now.day)
+              : selectedDate!,
+      nominee: _user.nominee,
+      nomineePhone: _user.nomineePhone,
+      nomineeRelation: _user.nomineeRelation,
+      adharCard: _user.adharCard,
+      panCard: _user.panCard,
+      pinCode: _user.pinCode,
+      staffName: _user.staffName,
+      limit: limitController.text,
+      whatsappNo: _user.whatsappNo,
+    );
     _formKey.currentState!.save();
     setState(() {
       _isLoading = true;
     });
     try {
-      var result = await Provider.of<User>(context, listen: false).update(
-          widget.user!['id'], _user, changeCustIdIS, balanceCnttrl.text);
+      var result = await Provider.of<User>(
+        context,
+        listen: false,
+      ).update(widget.user!['id'], _user, changeCustIdIS, balanceCnttrl.text);
 
       if (result == false) {
         final snackBar = SnackBar(content: const Text('Saved successfully!'));
@@ -211,9 +227,7 @@ class _UpdateCustomerScreenState extends State<UpdateCustomerScreen> {
         setState(() {
           isLoad = false;
         });
-        final snackBar = SnackBar(
-          content: const Text('Customer id is exist!'),
-        );
+        final snackBar = SnackBar(content: const Text('Customer id is exist!'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } catch (err) {
@@ -222,22 +236,24 @@ class _UpdateCustomerScreenState extends State<UpdateCustomerScreen> {
       });
       await showDialog(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text('An error occurred!'),
-          content: Text('Something went wrong. ${err}'),
-          actions: <Widget>[
-            OutlinedButton(
-              child: Text('Okay'),
-              onPressed: () {
-                Navigator.of(ctx).pop();
-              },
-            )
-          ],
-        ),
+        builder:
+            (ctx) => AlertDialog(
+              title: Text('An error occurred!'),
+              content: Text('Something went wrong. ${err}'),
+              actions: <Widget>[
+                OutlinedButton(
+                  child: Text('Okay'),
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                ),
+              ],
+            ),
       );
     }
   }
 
+  TextEditingController limitController = TextEditingController();
   TextEditingController balanceCnttrl = TextEditingController();
   List transaction = [];
   getTransaction(String staffId) {
@@ -251,661 +267,672 @@ class _UpdateCustomerScreenState extends State<UpdateCustomerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.blueGrey.shade50,
-        appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: useColor.homeIconColor,
-            elevation: 0,
-            title: Text(
-              "Update Customer",
-              style:
-                  TextStyle(fontFamily: 'latto', fontWeight: FontWeight.bold),
-            )),
-        body: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Container(
-            child: new SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      TextFormField(
-                        initialValue: widget.user!['name'],
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Cutomer name';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _user = UserModel(
-                              name: value!,
-                              custId: _user.custId,
-                              phoneNo: _user.phoneNo,
-                              address: _user.address,
-                              place: _user.place,
-                              mailId: _user.mailId,
-                              schemeType: _user.schemeType,
-                              balance: _user.balance,
-                              id: _user.id,
-                              staffId: _user.staffId,
-                              token: _user.token,
-                              totalGram: _user.totalGram,
-                              branch: _user.branch,
-                              dateofBirth: _user.dateofBirth,
-                              nominee: _user.nominee,
-                              nomineePhone: _user.nomineePhone,
-                              nomineeRelation: _user.nomineeRelation,
-                              adharCard: _user.adharCard,
-                              panCard: _user.panCard,
-                              pinCode: _user.pinCode,
-                              staffName: _user.staffName);
-                        },
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Enter Cutomer name',
+      backgroundColor: Colors.blueGrey.shade50,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: useColor.homeIconColor,
+        elevation: 0,
+        title: Text(
+          "Update Customer",
+          style: TextStyle(fontFamily: 'latto', fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Container(
+          child: new SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    TextFormField(
+                      initialValue: widget.user!['name'],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter Cutomer name';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: value!,
+                          custId: _user.custId,
+                          phoneNo: _user.phoneNo,
+                          address: _user.address,
+                          place: _user.place,
+                          mailId: _user.mailId,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          staffId: _user.staffId,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: _user.nominee,
+                          nomineePhone: _user.nomineePhone,
+                          nomineeRelation: _user.nomineeRelation,
+                          adharCard: _user.adharCard,
+                          panCard: _user.panCard,
+                          pinCode: _user.pinCode,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
                         ),
-                      ),
-                      SizedBox(
-                        height: 14,
-                      ),
-                      TextFormField(
-                        controller: balanceCnttrl,
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Customer Blance',
                         ),
+                        labelText: 'Enter Cutomer name',
                       ),
-                      SizedBox(
-                        height: 14,
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.number,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Phone ';
-                          }
-                          return null;
-                        },
-                        initialValue: widget.user!['phoneNo'],
-                        onSaved: (value) {
-                          _user = UserModel(
-                            name: _user.name,
-                            custId: _user.custId,
-                            phoneNo: value!,
-                            address: _user.address,
-                            place: _user.place,
-                            mailId: _user.mailId,
-                            schemeType: _user.schemeType,
-                            balance: _user.balance,
-                            id: _user.id,
-                            staffId: _user.staffId,
-                            token: _user.token,
-                            totalGram: _user.totalGram,
-                            branch: _user.branch,
-                            dateofBirth: _user.dateofBirth,
-                            nominee: _user.nominee,
-                            nomineePhone: _user.nomineePhone,
-                            nomineeRelation: _user.nomineeRelation,
-                            adharCard: _user.adharCard,
-                            panCard: _user.panCard,
-                            pinCode: _user.pinCode,
-                            staffName: _user.staffName,
-                          );
-                        },
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Phone number',
+                    ),
+                    SizedBox(height: 14),
+                    TextFormField(
+                      controller: balanceCnttrl,
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
                         ),
-                      ),
-                      SizedBox(
-                        height: 14,
-                      ),
-                      TextFormField(
-                        maxLines: 4,
-                        initialValue: widget.user!['address'],
-                        onSaved: (value) {
-                          _user = UserModel(
-                            name: _user.name,
-                            custId: _user.custId,
-                            phoneNo: _user.phoneNo,
-                            address: value!,
-                            place: _user.place,
-                            mailId: _user.mailId,
-                            schemeType: _user.schemeType,
-                            balance: _user.balance,
-                            id: _user.id,
-                            staffId: _user.staffId,
-                            token: _user.token,
-                            totalGram: _user.totalGram,
-                            branch: _user.branch,
-                            dateofBirth: _user.dateofBirth,
-                            nominee: _user.nominee,
-                            nomineePhone: _user.nomineePhone,
-                            nomineeRelation: _user.nomineeRelation,
-                            adharCard: _user.adharCard,
-                            panCard: _user.panCard,
-                            pinCode: _user.pinCode,
-                            staffName: _user.staffName,
-                          );
-                        },
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Address',
                         ),
+                        labelText: 'Customer Blance',
                       ),
-                      SizedBox(
-                        height: 14,
-                      ),
-                      TextFormField(
-                        initialValue: widget.user!['mail'],
-                        onSaved: (value) {
-                          _user = UserModel(
-                            name: _user.name,
-                            custId: _user.custId,
-                            phoneNo: _user.phoneNo,
-                            address: _user.address,
-                            place: _user.place,
-                            mailId: value,
-                            schemeType: _user.schemeType,
-                            balance: _user.balance,
-                            id: _user.id,
-                            staffId: _user.staffId,
-                            token: _user.token,
-                            totalGram: _user.totalGram,
-                            branch: _user.branch,
-                            dateofBirth: _user.dateofBirth,
-                            nominee: _user.nominee,
-                            nomineePhone: _user.nomineePhone,
-                            nomineeRelation: _user.nomineeRelation,
-                            adharCard: _user.adharCard,
-                            panCard: _user.panCard,
-                            pinCode: _user.pinCode,
-                            staffName: _user.staffName,
-                          );
-                        },
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Mail Id',
+                    ),
+                    SizedBox(height: 14),
+
+                    TextFormField(
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter Phone ';
+                        }
+                        return null;
+                      },
+                      initialValue: widget.user!['phoneNo'],
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: _user.name,
+                          custId: _user.custId,
+                          phoneNo: value!,
+                          address: _user.address,
+                          place: _user.place,
+                          mailId: _user.mailId,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          staffId: _user.staffId,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: _user.nominee,
+                          nomineePhone: _user.nomineePhone,
+                          nomineeRelation: _user.nomineeRelation,
+                          adharCard: _user.adharCard,
+                          panCard: _user.panCard,
+                          pinCode: _user.pinCode,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
                         ),
-                      ),
-                      SizedBox(
-                        height: 14,
-                      ),
-                      TextFormField(
-                        initialValue: widget.user!['place'],
-                        onSaved: (value) {
-                          _user = UserModel(
-                            name: _user.name,
-                            custId: _user.custId,
-                            phoneNo: _user.phoneNo,
-                            address: _user.address,
-                            place: value!,
-                            mailId: _user.mailId,
-                            schemeType: _user.schemeType,
-                            balance: _user.balance,
-                            id: _user.id,
-                            staffId: _user.staffId,
-                            token: _user.token,
-                            totalGram: _user.totalGram,
-                            branch: _user.branch,
-                            dateofBirth: _user.dateofBirth,
-                            nominee: _user.nominee,
-                            nomineePhone: _user.nomineePhone,
-                            nomineeRelation: _user.nomineeRelation,
-                            adharCard: _user.adharCard,
-                            panCard: _user.panCard,
-                            pinCode: _user.pinCode,
-                            staffName: _user.staffName,
-                          );
-                        },
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Place',
                         ),
+                        labelText: 'Phone number',
                       ),
-                      SizedBox(
-                        height: 14,
+                    ),
+                    SizedBox(height: 14),
+
+                    TextFormField(
+                      controller: limitController,
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: _user.name,
+                          custId: _user.custId,
+                          phoneNo: _user.phoneNo,
+                          address: _user.address,
+                          place: _user.place,
+                          mailId: _user.mailId,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          staffId: _user.staffId,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: _user.nominee,
+                          nomineePhone: _user.nomineePhone,
+                          nomineeRelation: _user.nomineeRelation,
+                          adharCard: _user.adharCard,
+                          panCard: _user.panCard,
+                          pinCode: _user.pinCode,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
+                          ),
+                        ),
+                        labelText: 'Limit',
                       ),
-                      Text(
-                        " date of birth",
-                        style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                    SizedBox(height: 14),
+                    TextFormField(
+                      maxLines: 4,
+                      initialValue: widget.user!['address'],
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: _user.name,
+                          custId: _user.custId,
+                          phoneNo: _user.phoneNo,
+                          address: value!,
+                          place: _user.place,
+                          mailId: _user.mailId,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          staffId: _user.staffId,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: _user.nominee,
+                          nomineePhone: _user.nomineePhone,
+                          nomineeRelation: _user.nomineeRelation,
+                          adharCard: _user.adharCard,
+                          panCard: _user.panCard,
+                          pinCode: _user.pinCode,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
+                          ),
+                        ),
+                        labelText: 'Address',
                       ),
-                      SizedBox(
-                        height: 10,
+                    ),
+                    SizedBox(height: 14),
+                    TextFormField(
+                      initialValue: widget.user!['mail'],
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: _user.name,
+                          custId: _user.custId,
+                          phoneNo: _user.phoneNo,
+                          address: _user.address,
+                          place: _user.place,
+                          mailId: value,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          staffId: _user.staffId,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: _user.nominee,
+                          nomineePhone: _user.nomineePhone,
+                          nomineeRelation: _user.nomineeRelation,
+                          adharCard: _user.adharCard,
+                          panCard: _user.panCard,
+                          pinCode: _user.pinCode,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
+                          ),
+                        ),
+                        labelText: 'Mail Id',
                       ),
-                      GestureDetector(
-                        onTap: () async {
-                          _selectDate();
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          height: MediaQuery.of(context).size.height * .074,
-                          decoration: BoxDecoration(
-                              // color: Colors.white,
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(color: Colors.black)),
-                          padding: EdgeInsets.only(left: 10, right: 10, top: 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.calendar_today,
-                                size: 19,
-                              ),
-                              Text(selectedDate == null
+                    ),
+                    SizedBox(height: 14),
+                    TextFormField(
+                      initialValue: widget.user!['place'],
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: _user.name,
+                          custId: _user.custId,
+                          phoneNo: _user.phoneNo,
+                          address: _user.address,
+                          place: value!,
+                          mailId: _user.mailId,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          staffId: _user.staffId,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: _user.nominee,
+                          nomineePhone: _user.nomineePhone,
+                          nomineeRelation: _user.nomineeRelation,
+                          adharCard: _user.adharCard,
+                          panCard: _user.panCard,
+                          pinCode: _user.pinCode,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
+                          ),
+                        ),
+                        labelText: 'Place',
+                      ),
+                    ),
+                    SizedBox(height: 14),
+                    Text(
+                      " date of birth",
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                    SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () async {
+                        _selectDate();
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: MediaQuery.of(context).size.height * .074,
+                        decoration: BoxDecoration(
+                          // color: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Colors.black),
+                        ),
+                        padding: EdgeInsets.only(left: 10, right: 10, top: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.calendar_today, size: 19),
+                            Text(
+                              selectedDate == null
                                   ? DateFormat(' MMM dd yyyy').format(now)
-                                  : DateFormat(' MMM dd yyyy')
-                                      .format(selectedDate!)),
-                            ],
-                          ),
+                                  : DateFormat(
+                                    ' MMM dd yyyy',
+                                  ).format(selectedDate!),
+                            ),
+                          ],
                         ),
                       ),
-                      SizedBox(
-                        height: 14,
-                      ),
-                      TextFormField(
-                        initialValue: widget.user!['nominee'],
-                        onSaved: (value) {
-                          _user = UserModel(
-                            name: _user.name,
-                            custId: _user.custId,
-                            phoneNo: _user.phoneNo,
-                            address: _user.address,
-                            place: _user.place,
-                            mailId: _user.mailId,
-                            staffId: _user.staffId,
-                            schemeType: _user.schemeType,
-                            balance: _user.balance,
-                            id: _user.id,
-                            token: _user.token,
-                            totalGram: _user.totalGram,
-                            branch: _user.branch,
-                            dateofBirth: _user.dateofBirth,
-                            nominee: value!,
-                            nomineePhone: _user.nomineePhone,
-                            nomineeRelation: _user.nomineeRelation,
-                            adharCard: _user.adharCard,
-                            panCard: _user.panCard,
-                            pinCode: _user.pinCode,
-                            staffName: _user.staffName,
-                          );
-                        },
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Nominee',
+                    ),
+                    SizedBox(height: 14),
+                    TextFormField(
+                      initialValue: widget.user!['nominee'],
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: _user.name,
+                          custId: _user.custId,
+                          phoneNo: _user.phoneNo,
+                          address: _user.address,
+                          place: _user.place,
+                          mailId: _user.mailId,
+                          staffId: _user.staffId,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: value!,
+                          nomineePhone: _user.nomineePhone,
+                          nomineeRelation: _user.nomineeRelation,
+                          adharCard: _user.adharCard,
+                          panCard: _user.panCard,
+                          pinCode: _user.pinCode,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
                         ),
-                      ),
-                      SizedBox(
-                        height: 14,
-                      ),
-                      TextFormField(
-                        initialValue: widget.user!['nomineePhone'],
-                        keyboardType: TextInputType.number,
-                        onSaved: (value) {
-                          _user = UserModel(
-                            name: _user.name,
-                            custId: _user.custId,
-                            phoneNo: _user.phoneNo,
-                            address: _user.address,
-                            place: _user.place,
-                            mailId: _user.mailId,
-                            staffId: _user.staffId,
-                            schemeType: _user.schemeType,
-                            balance: _user.balance,
-                            id: _user.id,
-                            token: _user.token,
-                            totalGram: _user.totalGram,
-                            branch: _user.branch,
-                            dateofBirth: _user.dateofBirth,
-                            nominee: _user.nominee,
-                            nomineePhone: value!,
-                            nomineeRelation: _user.nomineeRelation,
-                            adharCard: _user.adharCard,
-                            panCard: _user.panCard,
-                            pinCode: _user.pinCode,
-                            staffName: _user.staffName,
-                          );
-                        },
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Nominee phone',
                         ),
+                        labelText: 'Nominee',
                       ),
-                      SizedBox(
-                        height: 14,
-                      ),
-                      TextFormField(
-                        initialValue: widget.user!['nomineeRelation'],
-                        onSaved: (value) {
-                          _user = UserModel(
-                            name: _user.name,
-                            custId: _user.custId,
-                            phoneNo: _user.phoneNo,
-                            address: _user.address,
-                            place: _user.place,
-                            mailId: _user.mailId,
-                            staffId: _user.staffId,
-                            schemeType: _user.schemeType,
-                            balance: _user.balance,
-                            id: _user.id,
-                            token: _user.token,
-                            totalGram: _user.totalGram,
-                            branch: _user.branch,
-                            dateofBirth: _user.dateofBirth,
-                            nominee: _user.nominee,
-                            nomineePhone: _user.nomineePhone,
-                            nomineeRelation: value,
-                            adharCard: _user.adharCard,
-                            panCard: _user.panCard,
-                            pinCode: _user.pinCode,
-                            staffName: _user.staffName,
-                          );
-                        },
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Nominee Relation',
+                    ),
+                    SizedBox(height: 14),
+                    TextFormField(
+                      initialValue: widget.user!['nomineePhone'],
+                      keyboardType: TextInputType.number,
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: _user.name,
+                          custId: _user.custId,
+                          phoneNo: _user.phoneNo,
+                          address: _user.address,
+                          place: _user.place,
+                          mailId: _user.mailId,
+                          staffId: _user.staffId,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: _user.nominee,
+                          nomineePhone: value!,
+                          nomineeRelation: _user.nomineeRelation,
+                          adharCard: _user.adharCard,
+                          panCard: _user.panCard,
+                          pinCode: _user.pinCode,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
                         ),
-                      ),
-                      SizedBox(
-                        height: 14,
-                      ),
-                      TextFormField(
-                        initialValue: widget.user!['adharCard'],
-                        onSaved: (value) {
-                          _user = UserModel(
-                            name: _user.name,
-                            custId: _user.custId,
-                            phoneNo: _user.phoneNo,
-                            address: _user.address,
-                            place: _user.place,
-                            mailId: _user.mailId,
-                            staffId: _user.staffId,
-                            schemeType: _user.schemeType,
-                            balance: _user.balance,
-                            id: _user.id,
-                            token: _user.token,
-                            totalGram: _user.totalGram,
-                            branch: _user.branch,
-                            dateofBirth: _user.dateofBirth,
-                            nominee: _user.nominee,
-                            nomineePhone: _user.nomineePhone,
-                            nomineeRelation: _user.nomineeRelation,
-                            adharCard: value!,
-                            panCard: _user.panCard,
-                            pinCode: _user.pinCode,
-                            staffName: _user.staffName,
-                          );
-                        },
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Adhar Card',
                         ),
+                        labelText: 'Nominee phone',
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextFormField(
-                        initialValue: widget.user!['panCard'],
-                        onSaved: (value) {
-                          _user = UserModel(
-                            name: _user.name,
-                            custId: _user.custId,
-                            phoneNo: _user.phoneNo,
-                            address: _user.address,
-                            place: _user.place,
-                            mailId: _user.mailId,
-                            staffId: _user.staffId,
-                            schemeType: _user.schemeType,
-                            balance: _user.balance,
-                            id: _user.id,
-                            token: _user.token,
-                            totalGram: _user.totalGram,
-                            branch: _user.branch,
-                            dateofBirth: _user.dateofBirth,
-                            nominee: _user.nominee,
-                            nomineePhone: _user.nomineePhone,
-                            nomineeRelation: _user.nomineeRelation,
-                            adharCard: _user.adharCard,
-                            panCard: value,
-                            pinCode: _user.pinCode,
-                            staffName: _user.staffName,
-                          );
-                        },
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Pan Card',
+                    ),
+                    SizedBox(height: 14),
+                    TextFormField(
+                      initialValue: widget.user!['nomineeRelation'],
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: _user.name,
+                          custId: _user.custId,
+                          phoneNo: _user.phoneNo,
+                          address: _user.address,
+                          place: _user.place,
+                          mailId: _user.mailId,
+                          staffId: _user.staffId,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: _user.nominee,
+                          nomineePhone: _user.nomineePhone,
+                          nomineeRelation: value,
+                          adharCard: _user.adharCard,
+                          panCard: _user.panCard,
+                          pinCode: _user.pinCode,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
                         ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.number,
-                        initialValue: widget.user!['pinCode'],
-                        onSaved: (value) {
-                          _user = UserModel(
-                            name: _user.name,
-                            custId: _user.custId,
-                            phoneNo: _user.phoneNo,
-                            address: _user.address,
-                            place: _user.place,
-                            mailId: _user.mailId,
-                            staffId: _user.staffId,
-                            schemeType: _user.schemeType,
-                            balance: _user.balance,
-                            id: _user.id,
-                            token: _user.token,
-                            totalGram: _user.totalGram,
-                            branch: _user.branch,
-                            dateofBirth: _user.dateofBirth,
-                            nominee: _user.nominee,
-                            nomineePhone: _user.nomineePhone,
-                            nomineeRelation: _user.nomineeRelation,
-                            adharCard: _user.adharCard,
-                            panCard: _user.panCard,
-                            pinCode: value,
-                            staffName: _user.staffName,
-                          );
-                        },
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                            ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          labelText: 'Pin Code',
                         ),
+                        labelText: 'Nominee Relation',
                       ),
-                      SizedBox(
-                        height: 10,
+                    ),
+                    SizedBox(height: 14),
+                    TextFormField(
+                      initialValue: widget.user!['adharCard'],
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: _user.name,
+                          custId: _user.custId,
+                          phoneNo: _user.phoneNo,
+                          address: _user.address,
+                          place: _user.place,
+                          mailId: _user.mailId,
+                          staffId: _user.staffId,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: _user.nominee,
+                          nomineePhone: _user.nomineePhone,
+                          nomineeRelation: _user.nomineeRelation,
+                          adharCard: value!,
+                          panCard: _user.panCard,
+                          pinCode: _user.pinCode,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
+                          ),
+                        ),
+                        labelText: 'Adhar Card',
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Container(
-                              width: MediaQuery.of(context).size.width * .3,
-                              height: MediaQuery.of(context).size.height * .06,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color: useColor.homeIconColor,
-                              ),
-                              child: TextButton(
-                                onPressed: () {
-                                  if (isLoad)
-                                    return; // Prevent multiple taps when already saving
+                    ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      initialValue: widget.user!['panCard'],
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: _user.name,
+                          custId: _user.custId,
+                          phoneNo: _user.phoneNo,
+                          address: _user.address,
+                          place: _user.place,
+                          mailId: _user.mailId,
+                          staffId: _user.staffId,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: _user.nominee,
+                          nomineePhone: _user.nomineePhone,
+                          nomineeRelation: _user.nomineeRelation,
+                          adharCard: _user.adharCard,
+                          panCard: value,
+                          pinCode: _user.pinCode,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
+                          ),
+                        ),
+                        labelText: 'Pan Card',
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      keyboardType: TextInputType.number,
+                      initialValue: widget.user!['pinCode'],
+                      onSaved: (value) {
+                        _user = UserModel(
+                          name: _user.name,
+                          custId: _user.custId,
+                          phoneNo: _user.phoneNo,
+                          address: _user.address,
+                          place: _user.place,
+                          mailId: _user.mailId,
+                          staffId: _user.staffId,
+                          schemeType: _user.schemeType,
+                          balance: _user.balance,
+                          id: _user.id,
+                          token: _user.token,
+                          totalGram: _user.totalGram,
+                          branch: _user.branch,
+                          dateofBirth: _user.dateofBirth,
+                          nominee: _user.nominee,
+                          nomineePhone: _user.nomineePhone,
+                          nomineeRelation: _user.nomineeRelation,
+                          adharCard: _user.adharCard,
+                          panCard: _user.panCard,
+                          pinCode: value,
+                          staffName: _user.staffName,
+                          limit: limitController.text,
+                          whatsappNo: _user.whatsappNo,
+                        );
+                      },
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
+                          ),
+                        ),
+                        labelText: 'Pin Code',
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * .3,
+                          height: MediaQuery.of(context).size.height * .06,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: useColor.homeIconColor,
+                          ),
+                          child: TextButton(
+                            onPressed: () {
+                              if (isLoad)
+                                return; // Prevent multiple taps when already saving
 
+                              setState(() {
+                                isLoad = true;
+                              });
+
+                              if (oldBalance.toString() == balanceCnttrl.text) {
+                                _saveForm();
+                              } else {
+                                if (transaction.isNotEmpty) {
                                   setState(() {
-                                    isLoad = true;
+                                    isLoad = false;
                                   });
-
-                                  if (oldBalance.toString() ==
-                                      balanceCnttrl.text) {
-                                    _saveForm();
-                                  } else {
-                                    if (transaction.isNotEmpty) {
-                                      setState(() {
-                                        isLoad = false;
-                                      });
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                            content:
-                                                Text('Balance Can\'t Update')),
-                                      );
-                                    } else {
-                                      print("--- transaction empty ------");
-                                      _saveForm();
-                                    }
-                                  }
-                                },
-                                child: isLoad
-                                    ? Text('Saving...',
-                                        style: TextStyle(color: Colors.white))
-                                    : Text('Save',
-                                        style: TextStyle(color: Colors.white)),
-                              )),
-                        ],
-                      ),
-                    ],
-                  ),
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Balance Can\'t Update'),
+                                    ),
+                                  );
+                                } else {
+                                  print("--- transaction empty ------");
+                                  _saveForm();
+                                }
+                              }
+                            },
+                            child:
+                                isLoad
+                                    ? Text(
+                                      'Saving...',
+                                      style: TextStyle(color: Colors.white),
+                                    )
+                                    : Text(
+                                      'Save',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   bool isLoad = false;

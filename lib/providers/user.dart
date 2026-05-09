@@ -30,6 +30,8 @@ class UserModel {
   final String? pinCode;
   final String? staffName;
   final String? mailId;
+  final String limit;
+  final String whatsappNo;
 
   UserModel({
     required this.id,
@@ -52,7 +54,8 @@ class UserModel {
     this.panCard,
     this.pinCode,
     this.staffName,
-    required this.mailId,
+    required this.mailId, required  this.limit,
+    required this.whatsappNo,
   });
 
   UserModel.fromData(Map<String, dynamic> data)
@@ -76,7 +79,9 @@ class UserModel {
       panCard = data['panCard'],
       pinCode = data['pinCode'],
       staffName = data['staffName'],
-      mailId = data['mailId'];
+      mailId = data['mailId'],
+      limit = data['limit'],
+      whatsappNo = data['whatsapp_no'];
 
   Map<String, dynamic> toMap() {
     return {
@@ -100,6 +105,8 @@ class UserModel {
       'panCard': panCard,
       'pinCode': pinCode,
       'staffName': staffName,
+      'whatsapp_no': whatsappNo,
+      'limit':limit,
     };
   }
 }
@@ -157,6 +164,7 @@ class User with ChangeNotifier {
           'name': userModel.name,
           'custId': customerId,
           'phone_no': userModel.phoneNo,
+          'whatsapp_no': userModel.whatsappNo,
           'address': userModel.address,
           'place': userModel.place,
           'balance': 0.00,
@@ -231,6 +239,7 @@ class User with ChangeNotifier {
             'adharCard': userModel.adharCard,
             'panCard': userModel.panCard,
             'pinCode': userModel.pinCode,
+            'limit' : userModel.limit,
           });
           notifyListeners();
           return Future<bool>.value(false);
@@ -253,6 +262,7 @@ class User with ChangeNotifier {
           'adharCard': userModel.adharCard,
           'panCard': userModel.panCard,
           'pinCode': userModel.pinCode,
+          'limit' : userModel.limit,
         });
         notifyListeners();
         return Future<bool>.value(false);

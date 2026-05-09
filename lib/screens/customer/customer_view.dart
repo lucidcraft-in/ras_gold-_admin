@@ -52,21 +52,21 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
           transactionList = alllist[0];
           balanceAmt = (widget.user!["balance"] as num).toDouble();
           balancegram = alllist[2];
-//           for (var transaction in transactionList) {
-//             print(transaction);
+          //           for (var transaction in transactionList) {
+          //             print(transaction);
 
-//             // Ensure "transactionType" exists and is 0
-//             if (transaction["transactionType"] == 0 &&
-//                 transaction["amount"] != null) {
-//               sum += transaction["amount"];
-//               count += 1; // Count increments per valid transaction
-//             }
-//           }
+          //             // Ensure "transactionType" exists and is 0
+          //             if (transaction["transactionType"] == 0 &&
+          //                 transaction["amount"] != null) {
+          //               sum += transaction["amount"];
+          //               count += 1; // Count increments per valid transaction
+          //             }
+          //           }
 
-// // Avoid division by zero
-//           setState(() {
-//             averageGramRate = (count > 0) ? (sum / count) : 0;
-//           });
+          // // Avoid division by zero
+          //           setState(() {
+          //             averageGramRate = (count > 0) ? (sum / count) : 0;
+          //           });
         }
       });
     });
@@ -75,9 +75,10 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
   int transactionCount = 0;
   getCount(String custId) {
     print(custId);
-    Provider.of<TransactionProvider>(context, listen: false)
-        .getTransactionCount(custId)
-        .then((value) {
+    Provider.of<TransactionProvider>(
+      context,
+      listen: false,
+    ).getTransactionCount(custId).then((value) {
       setState(() {
         transactionCount = value;
       });
@@ -85,12 +86,14 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
   }
 
   getUpdateBalance() {
-    Provider.of<User>(context, listen: false)
-        .getUserBalance(widget.user!["custId"])
-        .then((val) {
+    Provider.of<User>(
+      context,
+      listen: false,
+    ).getUserBalance(widget.user!["custId"]).then((val) {
       setState(() {
         data = val;
-        averageGramRate = double.parse(data[0]["balance"].toStringAsFixed(2)) /
+        averageGramRate =
+            double.parse(data[0]["balance"].toStringAsFixed(2)) /
             double.parse(data[0]["total_gram"].toStringAsFixed(5));
 
         if (averageGramRate.isInfinite || averageGramRate.isNaN) {
@@ -134,9 +137,10 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
   Future<void> _delete() async {
     try {
       try {
-        Provider.of<User>(context, listen: false)
-            .delete(widget.user!['id'])
-            .then((value) {
+        Provider.of<User>(
+          context,
+          listen: false,
+        ).delete(widget.user!['id']).then((value) {
           initialise();
           // Navigator.pushReplacement(context,
           //     MaterialPageRoute(builder: (context) => CustomerScreen()));
@@ -145,18 +149,19 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
         // print(err);
         await showDialog(
           context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('An error occurred!'),
-            content: Text('Something went wrong. ${err}'),
-            actions: <Widget>[
-              OutlinedButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              )
-            ],
-          ),
+          builder:
+              (ctx) => AlertDialog(
+                title: Text('An error occurred!'),
+                content: Text('Something went wrong. ${err}'),
+                actions: <Widget>[
+                  OutlinedButton(
+                    child: Text('Okay'),
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                    },
+                  ),
+                ],
+              ),
         );
       }
       setState(() {
@@ -168,161 +173,165 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.blueGrey.shade50,
-        appBar: AppBar(
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(widget.user!['name']),
-              Text(
-                widget.user!['schemeType'],
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: widget.user!['schemeType'] == "Fixed"
+      backgroundColor: Colors.blueGrey.shade50,
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.user!['name']),
+            Text(
+              widget.user!['schemeType'],
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color:
+                    widget.user!['schemeType'] == "Fixed"
                         ? Colors.white
-                        : const Color.fromARGB(255, 244, 193, 54)),
+                        : const Color.fromARGB(255, 244, 193, 54),
               ),
-            ],
-          ),
-
-          backgroundColor: useColor.homeIconColor,
-          actions: [
-            if (staffType == 1)
-              IconButton(
-                icon: Image(
-                  image: AssetImage(
-                      "assets/images/subscription-business-model_11869476.png"),
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  _showCloseCustomerDialog(context);
-                },
-              )
+            ),
           ],
-          // actions: [
-          // staffType != 0
-          //     ?
-          // PopupMenuButton(
-          //   icon: Icon(Icons.settings),
-          //   itemBuilder: (BuildContext context) {
-          //     return [
-          //       PopupMenuItem(
-          //         child: GestureDetector(
-          //             onTap: () {
-          //               Navigator.pushReplacement(
-          //                   context,
-          //                   MaterialPageRoute(
-          //                       builder: (context) =>
-          //                           UpdateCustomerScreen(
-          //                               db: widget.dbUser,
-          //                               user: widget.user)));
-          //             },
-          //             child: ListTile(
-          //               leading: Icon(
-          //                 Icons.edit,
-          //                 color: Colors.blueGrey,
-          //               ),
-          //               title: Text("Edit"),
-          //             )),
-          //       ),
-          //       PopupMenuItem(
-          //         child: GestureDetector(
-          //             onTap: () {
-          //               // Navigator.push(
-          //               //     context,
-          //               //     MaterialPageRoute(
-          //               //         builder: (context) =>
-          //               //             UpdateCustomerScreen(
-          //               //                 db: widget.dbUser,
-          //               //                 user: widget.user)));
-          //             },
-          //             child: GestureDetector(
-          //               onTap: () {
-          //                 showDialog(
-          //                     context: context,
-          //                     builder: (context) {
-          //                       return AlertDialog(
-          //                         content: Container(
-          //                           width: 300,
-          //                           height: 100,
-          //                           child: Column(
-          //                             mainAxisAlignment:
-          //                                 MainAxisAlignment.spaceAround,
-          //                             crossAxisAlignment:
-          //                                 CrossAxisAlignment.start,
-          //                             children: [
-          //                               Text(
-          //                                   "Do You Want To Delete...!"),
-          //                               Row(
-          //                                 mainAxisAlignment:
-          //                                     MainAxisAlignment.end,
-          //                                 children: [
-          //                                   GestureDetector(
-          //                                       onTap: () {
-          //                                         Navigator.pop(
-          //                                             context);
-          //                                       },
-          //                                       child: Text("Cancel")),
-          //                                   SizedBox(
-          //                                     width: 20,
-          //                                   ),
-          //                                   GestureDetector(
-          //                                       onTap: () {
-          //                                         _delete();
-          //                                       },
-          //                                       child: Text("Ok"))
-          //                                 ],
-          //                               )
-          //                             ],
-          //                           ),
-          //                         ),
-          //                       );
-          //                     });
-          //               },
-          //               child: ListTile(
-          //                 leading: Icon(
-          //                   Icons.delete_forever,
-          //                   color: Colors.red,
-          //                 ),
-          //                 title: Text("Delete"),
-          //               ),
-          //             )),
-          //       ),
-          //     ];
-          //   })
-          // Container()
-          // : Container()
-          // ],
         ),
-        body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(15),
-                child: Container(
-                  width: double.infinity,
-                  // height: MediaQuery.of(context).size.height * .2,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
-                        width: 1.0,
-                        color: Colors.blueGrey.shade200,
-                        style: BorderStyle.solid),
+
+        backgroundColor: useColor.homeIconColor,
+        actions: [
+          if (staffType == 1)
+            IconButton(
+              icon: Image(
+                image: AssetImage(
+                  "assets/images/subscription-business-model_11869476.png",
+                ),
+                color: Colors.white,
+              ),
+              onPressed: () {
+                _showCloseCustomerDialog(context);
+              },
+            ),
+        ],
+        // actions: [
+        // staffType != 0
+        //     ?
+        // PopupMenuButton(
+        //   icon: Icon(Icons.settings),
+        //   itemBuilder: (BuildContext context) {
+        //     return [
+        //       PopupMenuItem(
+        //         child: GestureDetector(
+        //             onTap: () {
+        //               Navigator.pushReplacement(
+        //                   context,
+        //                   MaterialPageRoute(
+        //                       builder: (context) =>
+        //                           UpdateCustomerScreen(
+        //                               db: widget.dbUser,
+        //                               user: widget.user)));
+        //             },
+        //             child: ListTile(
+        //               leading: Icon(
+        //                 Icons.edit,
+        //                 color: Colors.blueGrey,
+        //               ),
+        //               title: Text("Edit"),
+        //             )),
+        //       ),
+        //       PopupMenuItem(
+        //         child: GestureDetector(
+        //             onTap: () {
+        //               // Navigator.push(
+        //               //     context,
+        //               //     MaterialPageRoute(
+        //               //         builder: (context) =>
+        //               //             UpdateCustomerScreen(
+        //               //                 db: widget.dbUser,
+        //               //                 user: widget.user)));
+        //             },
+        //             child: GestureDetector(
+        //               onTap: () {
+        //                 showDialog(
+        //                     context: context,
+        //                     builder: (context) {
+        //                       return AlertDialog(
+        //                         content: Container(
+        //                           width: 300,
+        //                           height: 100,
+        //                           child: Column(
+        //                             mainAxisAlignment:
+        //                                 MainAxisAlignment.spaceAround,
+        //                             crossAxisAlignment:
+        //                                 CrossAxisAlignment.start,
+        //                             children: [
+        //                               Text(
+        //                                   "Do You Want To Delete...!"),
+        //                               Row(
+        //                                 mainAxisAlignment:
+        //                                     MainAxisAlignment.end,
+        //                                 children: [
+        //                                   GestureDetector(
+        //                                       onTap: () {
+        //                                         Navigator.pop(
+        //                                             context);
+        //                                       },
+        //                                       child: Text("Cancel")),
+        //                                   SizedBox(
+        //                                     width: 20,
+        //                                   ),
+        //                                   GestureDetector(
+        //                                       onTap: () {
+        //                                         _delete();
+        //                                       },
+        //                                       child: Text("Ok"))
+        //                                 ],
+        //                               )
+        //                             ],
+        //                           ),
+        //                         ),
+        //                       );
+        //                     });
+        //               },
+        //               child: ListTile(
+        //                 leading: Icon(
+        //                   Icons.delete_forever,
+        //                   color: Colors.red,
+        //                 ),
+        //                 title: Text("Delete"),
+        //               ),
+        //             )),
+        //       ),
+        //     ];
+        //   })
+        // Container()
+        // : Container()
+        // ],
+      ),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(15),
+              child: Container(
+                width: double.infinity,
+                // height: MediaQuery.of(context).size.height * .2,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    width: 1.0,
+                    color: Colors.blueGrey.shade200,
+                    style: BorderStyle.solid,
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: MediaQuery.of(context).size.height * .1,
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: Container(
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * .1,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
                               child: Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
@@ -331,8 +340,9 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
                                     "Available balance is",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        color: Colors.grey[500],
-                                        fontFamily: 'latto'),
+                                      color: Colors.grey[500],
+                                      fontFamily: 'latto',
+                                    ),
                                   ),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -342,9 +352,7 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
                                         size: 17,
                                         color: Theme.of(context).primaryColor,
                                       ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
+                                      SizedBox(width: 10),
                                       Text(
                                         data.isNotEmpty
                                             ? data[0]["balance"]
@@ -354,25 +362,27 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
                                         //     ? " + ₹ ${balanceAmt.toString()}"
                                         //     : " + ₹ 00",
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'latto',
-                                            fontSize: 15),
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'latto',
+                                          fontSize: 15,
+                                        ),
                                       ),
                                     ],
-                                  )
+                                  ),
                                 ],
                               ),
-                            )),
-                            Padding(
-                              padding: EdgeInsets.only(top: 10, bottom: 10),
-                              child: Container(
-                                width: 1,
-                                height: 100,
-                                color: Colors.black12,
-                              ),
                             ),
-                            Expanded(
-                                child: Container(
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 10, bottom: 10),
+                            child: Container(
+                              width: 1,
+                              height: 100,
+                              color: Colors.black12,
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
                               child: Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
@@ -381,8 +391,9 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
                                     "Total Gram ",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        color: Colors.grey[500],
-                                        fontFamily: 'latto'),
+                                      color: Colors.grey[500],
+                                      fontFamily: 'latto',
+                                    ),
                                   ),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -392,9 +403,7 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
                                         size: 17,
                                         color: Theme.of(context).primaryColor,
                                       ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
+                                      SizedBox(width: 10),
                                       Text(
                                         data.isNotEmpty
                                             ? data[0]["total_gram"]
@@ -404,170 +413,43 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
                                         //     ? " ${balancegram.toStringAsFixed(3)}"
                                         //     : "0.00",
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'latto',
-                                            fontSize: 15),
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'latto',
+                                          fontSize: 15,
+                                        ),
                                       ),
                                     ],
-                                  )
+                                  ),
                                 ],
                               ),
-                            ))
-                          ],
-                        ),
+                            ),
+                          ),
+                        ],
                       ),
-                      staffType == 1
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * .32,
-                                  height:
-                                      MediaQuery.of(context).size.width * .1,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  PayAmountScreen(
-                                                      user: widget.user!,
-                                                      dbUser: widget.dbUser!,
-                                                      userid:
-                                                          widget.user!['id'],
-                                                      custName:
-                                                          widget.user!['name'],
-                                                      token:
-                                                          widget.user!['token'],
-                                                      balance: balanceAmt
-                                                          .toDouble()))).then(
-                                          (value) {
-                                        if (value == true) {
-                                          setState(() {
-                                            getUpdateBalance();
-                                          });
-                                        }
-                                      });
-                                    },
-                                    style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all(
-                                                Colors.white),
-                                        shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
-                                            RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(15.0),
-                                                side: BorderSide(
-                                                    color: Colors.green)))),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      // Replace with a Row for horizontal icon + text
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.arrow_downward,
-                                          color: Colors.green,
-                                        ),
-                                        Text(
-                                          "Reciept",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * .32,
-                                  height:
-                                      MediaQuery.of(context).size.width * .1,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      // print(data[0]["total_gram"].runtimeType);
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  PurchaseAmountScreen(
-                                                      avgGrmRate:
-                                                          averageGramRate,
-                                                      depositAmt: data[0]
-                                                          ["balance"],
-                                                      user: widget.user!,
-                                                      dbUser: widget.dbUser!,
-                                                      userid:
-                                                          widget.user!['id'],
-                                                      token:
-                                                          widget.user!['token'],
-                                                      balance: balanceAmt,
-                                                      custName:
-                                                          widget.user!['name'],
-                                                      totalGram: data[0]
-                                                          ["total_gram"]
-                                                      // totalGram: double.parse(
-                                                      //     data[0]["total_gram"]),
-                                                      ))).then((value) {
-                                        if (value == true) {
-                                          setState(() {
-                                            getUpdateBalance();
-                                          });
-                                        }
-                                      });
-                                    },
-                                    style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all(
-                                                Colors.white),
-                                        shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
-                                            RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(15.0),
-                                                side: BorderSide(
-                                                    color: Colors.red)))),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      // Replace with a Row for horizontal icon + text
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.arrow_upward,
-                                          color: Colors.red,
-                                        ),
-                                        Text(
-                                          "Purchase",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Container(
+                    ),
+                    staffType == 1
+                        ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Container(
                               width: MediaQuery.of(context).size.width * .32,
                               height: MediaQuery.of(context).size.width * .1,
                               child: ElevatedButton(
                                 onPressed: () {
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => PayAmountScreen(
-                                              user: widget.user!,
-                                              dbUser: widget.dbUser!,
-                                              userid: widget.user!['id'],
-                                              custName: widget.user!['name'],
-                                              token: widget.user!['token'],
-                                              balance: balanceAmt
-                                                  .toDouble()))).then((value) {
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => PayAmountScreen(
+                                            user: widget.user!,
+                                            dbUser: widget.dbUser!,
+                                            userid: widget.user!['id'],
+                                            custName: widget.user!['name'],
+                                            token: widget.user!['token'],
+                                            balance: balanceAmt.toDouble(),
+                                          ),
+                                    ),
+                                  ).then((value) {
                                     if (value == true) {
                                       setState(() {
                                         getUpdateBalance();
@@ -576,15 +458,18 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
                                   });
                                 },
                                 style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all(Colors.white),
-                                    shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15.0),
-                                            side: BorderSide(
-                                                color: Colors.green)))),
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Colors.white,
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder
+                                  >(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      side: BorderSide(color: Colors.green),
+                                    ),
+                                  ),
+                                ),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
@@ -597,99 +482,222 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
                                     Text(
                                       "Reciept",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500),
-                                    )
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                             ),
-                      SizedBox(height: 20),
-                      // if (data.isNotEmpty)
-                      //   if (data[0]["balance"] != 0)
-                      //     Container(
-                      //       width: MediaQuery.of(context).size.width * .32,
-                      //       height: MediaQuery.of(context).size.width * .1,
-                      //       child: ElevatedButton(
-                      //         onPressed: () {
-                      //           Navigator.push(
-                      //               context,
-                      //               MaterialPageRoute(
-                      //                   builder: (context) => TransactionForm(
-                      //                         user: widget.user!,
-                      //                         dbUser: widget.dbUser!,
-                      //                         userid: widget.user!['id'],
-                      //                         token: widget.user!['token'],
-                      //                         balance: balanceAmt.toDouble(),
-                      //                         custName: widget.user!['name'],
-                      //                       ))).then((value) {
-                      //             if (value == true) {
-                      //               setState(() {
-                      //                 getUpdateBalance();
-                      //               });
-                      //             }
-                      //           });
-                      //         },
-                      //         style: ButtonStyle(
-                      //             backgroundColor:
-                      //                 MaterialStateProperty.all(Colors.white),
-                      //             shape: MaterialStateProperty.all<
-                      //                     RoundedRectangleBorder>(
-                      //                 RoundedRectangleBorder(
-                      //                     borderRadius:
-                      //                         BorderRadius.circular(15.0),
-                      //                     side: BorderSide(
-                      //                       color: Color.fromARGB(
-                      //                           255, 210, 111, 36),
-                      //                     )))),
-                      //         child: Row(
-                      //           mainAxisAlignment:
-                      //               MainAxisAlignment.spaceEvenly,
-                      //           // Replace with a Row for horizontal icon + text
-                      //           children: <Widget>[
-                      //             Icon(
-                      //               Icons.discount,
-                      //               color: Color.fromARGB(255, 210, 111, 36),
-                      //             ),
-                      //             Text(
-                      //               "Discount",
-                      //               style: TextStyle(
-                      //                   color: Colors.black,
-                      //                   fontSize: 14,
-                      //                   fontWeight: FontWeight.w500),
-                      //             )
-                      //           ],
-                      //         ),
-                      //       ),
-                      //     ),
-                      // if (data.isNotEmpty)
-                      //   if (data[0]["balance"] != 0) SizedBox(height: 20),
-                    ],
-                  ),
+                            Container(
+                              width: MediaQuery.of(context).size.width * .32,
+                              height: MediaQuery.of(context).size.width * .1,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // print(data[0]["total_gram"].runtimeType);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => PurchaseAmountScreen(
+                                            avgGrmRate: averageGramRate,
+                                            depositAmt: data[0]["balance"],
+                                            user: widget.user!,
+                                            dbUser: widget.dbUser!,
+                                            userid: widget.user!['id'],
+                                            token: widget.user!['token'],
+                                            balance: balanceAmt,
+                                            custName: widget.user!['name'],
+                                            totalGram: data[0]["total_gram"],
+                                            // totalGram: double.parse(
+                                            //     data[0]["total_gram"]),
+                                          ),
+                                    ),
+                                  ).then((value) {
+                                    if (value == true) {
+                                      setState(() {
+                                        getUpdateBalance();
+                                      });
+                                    }
+                                  });
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Colors.white,
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder
+                                  >(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      side: BorderSide(color: Colors.red),
+                                    ),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  // Replace with a Row for horizontal icon + text
+                                  children: <Widget>[
+                                    Icon(Icons.arrow_upward, color: Colors.red),
+                                    Text(
+                                      "Purchase",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                        : Container(
+                          width: MediaQuery.of(context).size.width * .32,
+                          height: MediaQuery.of(context).size.width * .1,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => PayAmountScreen(
+                                        user: widget.user!,
+                                        dbUser: widget.dbUser!,
+                                        userid: widget.user!['id'],
+                                        custName: widget.user!['name'],
+                                        token: widget.user!['token'],
+                                        balance: balanceAmt.toDouble(),
+                                      ),
+                                ),
+                              ).then((value) {
+                                if (value == true) {
+                                  setState(() {
+                                    getUpdateBalance();
+                                  });
+                                }
+                              });
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(
+                                Colors.white,
+                              ),
+                              shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder
+                              >(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  side: BorderSide(color: Colors.green),
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              // Replace with a Row for horizontal icon + text
+                              children: <Widget>[
+                                Icon(Icons.arrow_downward, color: Colors.green),
+                                Text(
+                                  "Reciept",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    SizedBox(height: 20),
+                    // if (data.isNotEmpty)
+                    //   if (data[0]["balance"] != 0)
+                    //     Container(
+                    //       width: MediaQuery.of(context).size.width * .32,
+                    //       height: MediaQuery.of(context).size.width * .1,
+                    //       child: ElevatedButton(
+                    //         onPressed: () {
+                    //           Navigator.push(
+                    //               context,
+                    //               MaterialPageRoute(
+                    //                   builder: (context) => TransactionForm(
+                    //                         user: widget.user!,
+                    //                         dbUser: widget.dbUser!,
+                    //                         userid: widget.user!['id'],
+                    //                         token: widget.user!['token'],
+                    //                         balance: balanceAmt.toDouble(),
+                    //                         custName: widget.user!['name'],
+                    //                       ))).then((value) {
+                    //             if (value == true) {
+                    //               setState(() {
+                    //                 getUpdateBalance();
+                    //               });
+                    //             }
+                    //           });
+                    //         },
+                    //         style: ButtonStyle(
+                    //             backgroundColor:
+                    //                 MaterialStateProperty.all(Colors.white),
+                    //             shape: MaterialStateProperty.all<
+                    //                     RoundedRectangleBorder>(
+                    //                 RoundedRectangleBorder(
+                    //                     borderRadius:
+                    //                         BorderRadius.circular(15.0),
+                    //                     side: BorderSide(
+                    //                       color: Color.fromARGB(
+                    //                           255, 210, 111, 36),
+                    //                     )))),
+                    //         child: Row(
+                    //           mainAxisAlignment:
+                    //               MainAxisAlignment.spaceEvenly,
+                    //           // Replace with a Row for horizontal icon + text
+                    //           children: <Widget>[
+                    //             Icon(
+                    //               Icons.discount,
+                    //               color: Color.fromARGB(255, 210, 111, 36),
+                    //             ),
+                    //             Text(
+                    //               "Discount",
+                    //               style: TextStyle(
+                    //                   color: Colors.black,
+                    //                   fontSize: 14,
+                    //                   fontWeight: FontWeight.w500),
+                    //             )
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     ),
+                    // if (data.isNotEmpty)
+                    //   if (data[0]["balance"] != 0) SizedBox(height: 20),
+                  ],
                 ),
               ),
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: useColor.homeIconColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  "Average Gram Rate: ${averageGramRate.toStringAsFixed(2)}",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: useColor.homeIconColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                "Average Gram Rate: ${averageGramRate.toStringAsFixed(2)}",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    child: alllist.isNotEmpty
-                        ? ListView.builder(
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  child:
+                      alllist.isNotEmpty
+                          ? ListView.builder(
                             shrinkWrap: true,
                             itemCount: transactionList.length,
                             itemBuilder: (BuildContext context, int index) {
@@ -698,317 +706,216 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
                               // print(myDateTime);
                               // String formattedDate = DateFormat('dd/MM/yyyy')
                               //     .format(transactionList[index]['date']);
+                              // Transaction details section
                               return GestureDetector(
                                 child: Container(
+                                  margin: EdgeInsets.only(bottom: 10),
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15)),
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(14),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 6,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
                                   child: Column(
                                     children: [
+                                      // Date Time Header
                                       Container(
-                                        padding: EdgeInsets.only(left: 10),
-                                        height: 35,
-                                        color: Colors.grey.shade300,
-                                        child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              DateFormat
-                                                      .yMMMd() // Format for date like "Sep 24, 2024"
-                                                  .add_jm() // Format for time like "5:08 PM"
-                                                  .format(myDateTime)
-                                                  .toString(),
-                                              style: TextStyle(
-                                                  color: Colors.black87,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600),
-                                            )),
-                                      ),
-                                      Container(
-                                        color: Colors.white,
-                                        height: 70,
-                                        child: ListTile(
-                                          leading: Container(
-                                            padding: EdgeInsets.only(right: 10),
-                                            child: transactionList[index]
-                                                        ['transactionType'] ==
-                                                    0
-                                                ? FaIcon(
-                                                    FontAwesomeIcons.plusCircle,
-                                                    size: 22,
-                                                    color: Colors.green[700],
-                                                  )
-                                                : transactionList[index][
-                                                            'transactionType'] !=
-                                                        2
-                                                    ? FaIcon(
-                                                        FontAwesomeIcons
-                                                            .minusCircle,
-                                                        size: 22,
-                                                        color: Colors.red[700],
-                                                      )
-                                                    : FaIcon(
-                                                        FontAwesomeIcons
-                                                            .minusCircle,
-                                                        size: 22,
-                                                        color: Colors.orange,
-                                                      ),
+                                        width: double.infinity,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 15,
+                                          vertical: 10,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade200,
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(14),
                                           ),
-                                          title: Row(
-                                            children: [
-                                              Text(
-                                                  "${transactionList[index]['note']}"
-                                                      .toUpperCase()),
-                                              Text(
-                                                transactionList[index][
-                                                            'transactionMode'] ==
-                                                        "online"
-                                                    ? "${transactionList[index]['transactionMode']}"
-                                                    : "",
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontFamily: "latto",
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Color.fromARGB(
-                                                        221, 47, 144, 37)),
-                                              ),
-                                            ],
+                                        ),
+                                        child: Text(
+                                          DateFormat.yMMMd().add_jm().format(
+                                            myDateTime,
                                           ),
-                                          subtitle: Row(
-                                            children: [
-                                              Text(
-                                                "Invoice No : " +
-                                                    "${transactionList[index]['merchentTransactionId']}"
-                                                        .toUpperCase(),
-                                                style: TextStyle(
-                                                    fontSize: 11,
-                                                    fontFamily: "latto",
-                                                    color: Colors.black87),
-                                              ),
-                                            ],
-                                          ),
-                                          trailing: Text(
-                                            "${transactionList[index]['gramWeight'].toStringAsFixed(3)} gm",
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontFamily: "latto",
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black87),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black87,
                                           ),
                                         ),
                                       ),
-                                      // Text(DateTime.parse(formattedDate)
-                                      //     .toString()),
+
+                                      // Heading
                                       Container(
-                                        height: 1,
-                                        color: Colors.black12,
-                                      ),
-                                      Container(
-                                          height: 40,
-                                          width: double.infinity,
-                                          color: Colors.white,
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 20,
-                                                right: 20,
-                                                top: 8,
-                                                bottom: 8),
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.list_alt,
-                                                  color: Colors.grey.shade600,
-                                                ),
-                                                SizedBox(
-                                                  width: 20,
-                                                ),
-                                                Text(
-                                                  "Transaction Details",
-                                                  style: TextStyle(
-                                                    fontFamily: 'latto',
-                                                    fontSize: 12,
-                                                    color: Colors.black87,
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Align(
-                                                    alignment:
-                                                        Alignment.centerRight,
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          selectedIndex = index;
-                                                          isClick = true;
-                                                        });
-                                                      },
-                                                      child: isClick == false
-                                                          ? Icon(Icons
-                                                              .keyboard_arrow_down)
-                                                          : GestureDetector(
-                                                              onTap: () {
-                                                                setState(() {
-                                                                  selectedIndex =
-                                                                      -1;
-                                                                  isClick =
-                                                                      false;
-                                                                });
-                                                              },
-                                                              child: Icon(Icons
-                                                                  .keyboard_arrow_up)),
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
+                                        padding: EdgeInsets.all(15),
+                                        child: Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 18,
+                                              backgroundColor:
+                                                  transactionList[index]['transactionType'] ==
+                                                          0
+                                                      ? Colors.green.shade100
+                                                      : Colors.red.shade100,
+                                              child: Icon(
+                                                transactionList[index]['transactionType'] ==
+                                                        0
+                                                    ? Icons.add
+                                                    : Icons.remove,
+                                                color:
+                                                    transactionList[index]['transactionType'] ==
+                                                            0
+                                                        ? Colors.green
+                                                        : Colors.red,
+                                              ),
                                             ),
-                                          )),
-                                      selectedIndex == index
-                                          ? Container(
-                                              // height: 220,
-                                              color: Colors.white,
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 10, right: 10),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Text(
-                                                          "Gram Price",
-                                                          style: TextStyle(
-                                                            fontFamily: 'latto',
-                                                            fontSize: 12,
-                                                            color:
-                                                                Colors.black87,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          transactionList[index]
-                                                                  [
-                                                                  'gramPriceInvestDay']
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                            fontFamily: 'latto',
-                                                            fontSize: 12,
-                                                            color:
-                                                                Colors.black87,
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Text(
-                                                          "Recieved Amount",
-                                                          style: TextStyle(
-                                                            fontFamily: 'latto',
-                                                            fontSize: 12,
-                                                            color:
-                                                                Colors.black87,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          transactionList[index]
-                                                                  ['amount']
-                                                              .toStringAsFixed(
-                                                                  2),
-                                                          style: TextStyle(
-                                                            fontFamily: 'latto',
-                                                            fontSize: 12,
-                                                            color:
-                                                                Colors.black87,
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    Container(
-                                                      height: 1,
-                                                      color: Colors.black12,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Text(
-                                                          "Paid Amount",
-                                                          style: TextStyle(
-                                                            fontFamily: 'latto',
-                                                            fontSize: 12,
-                                                            color:
-                                                                Colors.black87,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          " ₹ ${transactionList[index]['amount'].toStringAsFixed(2)}",
-                                                          style: TextStyle(
-                                                              fontSize: 14,
-                                                              fontFamily:
-                                                                  "latto",
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color: Colors
-                                                                  .black87),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    // staffType == 1
-                                                    //     ?
-                                                    Row(
-                                                      children: [
-                                                        IconButton(
-                                                          onPressed: () {
-                                                            Navigator.pushReplacement(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder: (context) => UpdateTransaction(
-                                                                        user: widget
-                                                                            .user!,
-                                                                        dbUser: widget
-                                                                            .dbUser!,
-                                                                        db: db!,
-                                                                        transaction:
-                                                                            transactionList[
-                                                                                index],
-                                                                        staffType:
-                                                                            staffType)));
-                                                          },
-                                                          icon: const Icon(
-                                                            Icons.edit,
-                                                            color:
-                                                                Colors.blueGrey,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    )
-                                                    // : Container(),
-                                                  ],
+                                            SizedBox(width: 12),
+
+                                            Expanded(
+                                              child: Text(
+                                                transactionList[index]['note']
+                                                    .toString()
+                                                    .toUpperCase(),
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                            )
-                                          : SizedBox(),
-                                      SizedBox(
-                                        height: 5,
-                                      )
+                                            ),
+
+                                            Text(
+                                              "${transactionList[index]['gramWeight'].toStringAsFixed(3)} gm",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      Divider(height: 1),
+
+                                      // Transaction Details Heading
+                                      Container(
+                                        width: double.infinity,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 15,
+                                          vertical: 10,
+                                        ),
+                                        child: Text(
+                                          "Transaction Details",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.blueGrey,
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Details
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 15,
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            detailRow(
+                                              "Gram Price",
+                                              "${transactionList[index]['gramPriceInvestDay']}",
+                                            ),
+
+                                            detailRow(
+                                              "Received Amount",
+                                              "₹ ${transactionList[index]['amount'].toStringAsFixed(2)}",
+                                            ),
+
+                                            detailRow(
+                                              "Weight",
+                                              "${transactionList[index]['gramWeight'].toStringAsFixed(3)} gm",
+                                            ),
+
+                                            detailRow(
+                                              "Payment Mode",
+                                              "${transactionList[index]['transactionMode']}",
+                                            ),
+
+                                            detailRow(
+                                              "Invoice No",
+                                              "${transactionList[index]['merchentTransactionId']}",
+                                            ),
+
+                                            detailRow(
+                                              "Note",
+                                              "${transactionList[index]['note']}",
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      Divider(),
+
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 15,
+                                          vertical: 12,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              "Paid Amount",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              "₹ ${transactionList[index]['amount'].toStringAsFixed(2)}",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.green,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
                               );
-                            })
-                        : Text("No Data Available...."),
-                  ),
+                            },
+                          )
+                          : Text("No Data Available...."),
                 ),
               ),
-            ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+ // Detail Row Widget for Transaction details
+  Widget detailRow(String title, String value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: TextStyle(color: Colors.grey, fontSize: 13)),
+          Text(
+            value,
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
           ),
-        ));
+        ],
+      ),
+    );
   }
 
   void _showCloseCustomerDialog(BuildContext context) {
@@ -1068,14 +975,17 @@ class _CustomerViewScreenState extends State<CustomerViewScreen> {
                   child: Text('Confirm'),
                   onPressed: () {
                     Provider.of<User>(context, listen: false).upldateCloseUser(
-                        widget.user!['id'],
-                        data[0]["balance"],
-                        data[0]["total_gram"],
-                        selectedDate!); // Pass the selected date instead of DateTime.now()
+                      widget.user!['id'],
+                      data[0]["balance"],
+                      data[0]["total_gram"],
+                      selectedDate!,
+                    ); // Pass the selected date instead of DateTime.now()
                     Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => HomeScreen()),
-                        (Route<dynamic> route) => false);
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => HomeScreen(),
+                      ),
+                      (Route<dynamic> route) => false,
+                    );
                   },
                 ),
               ],

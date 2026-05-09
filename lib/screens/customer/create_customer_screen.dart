@@ -1,15 +1,17 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+
 import '../../constant/colors.dart';
 import '../../providers/goldrate.dart';
 import '../../providers/staff.dart';
-import 'package:provider/provider.dart';
 import '../../providers/user.dart';
-import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
-
 import 'customer_screen.dart';
 
 class CreateCustomerScreen extends StatefulWidget {
@@ -29,11 +31,16 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _gramController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController whatsappController = TextEditingController();
+
+  bool sameAsPhone = false;
   DateTime? selectedDate;
   DateTime selectOpnDate = DateTime.now();
   DateTime now = DateTime.now();
   String custid = "";
   List counter = [];
+  String? dobError;
   @override
   void initState() {
     // TODO: implement initState
@@ -76,6 +83,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
         panCard: _user.panCard,
         pinCode: _user.pinCode,
         staffName: staffDetails['staffName'],
+        limit: '',
+        whatsappNo: _user.whatsappNo,
       );
     }
 
@@ -176,12 +185,22 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
     panCard: "",
     pinCode: "",
     staffName: '',
+    limit: '',
+    whatsappNo: "",
   );
 
   Future<void> _saveForm() async {
     if (isClick) return; // Prevent multiple calls
+    setState(() {
+      dobError = selectedDate == null ? 'Please select date of birth' : null;
+    });
 
     final isValid = _formKey.currentState!.validate();
+
+    if (!isValid || dobError != null) {
+      return;
+    }
+
     if (!isValid) {
       setState(() => isClick = false);
 
@@ -227,6 +246,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
           panCard: _user.panCard,
           pinCode: _user.pinCode,
           staffName: _selectStaffName,
+          limit: '',
+          whatsappNo: _user.whatsappNo,
         );
 
         CollectionReference collectionReference = FirebaseFirestore.instance
@@ -369,7 +390,7 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
   List staffList = [];
   String? selectSchemeType;
   final List<String> schemeTypeList = ["Non-Fixed", "Fixed"];
-  final List<String> limit = ["500 - 15000", "Other"];
+  final List<String> limit = ["1000 - 5000", "5001 - 10000"];
   String? selectLimit;
   final TextEditingController otherLimitController = TextEditingController();
   String? selectOdType;
@@ -459,7 +480,7 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                           TextFormField(
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter Cutomer name';
+                                return 'This field is required';
                               }
                               return null;
                             },
@@ -486,6 +507,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                 panCard: _user.panCard,
                                 pinCode: _user.pinCode,
                                 staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: _user.whatsappNo,
                               );
                             },
                             decoration: const InputDecoration(
@@ -509,7 +532,7 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                             controller: custIdCntrl,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter Cutomer id';
+                                return 'This field is required';
                               }
                               return null;
                             },
@@ -559,12 +582,15 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                           DropdownButtonFormField<String>(
                             value: selectLimit,
                             hint: Text('Select Limit'),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a limit';
+                              }
+                              return null;
+                            },
                             onChanged: (String? newValue) {
                               setState(() {
                                 selectLimit = newValue;
-                                if (newValue != "Other") {
-                                  otherLimitController.clear();
-                                }
                               });
                             },
                             items:
@@ -581,16 +607,7 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                               border: OutlineInputBorder(),
                             ),
                           ),
-                          SizedBox(height: 12),
-                          if (selectLimit == "Other")
-                            TextFormField(
-                              controller: otherLimitController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: 'Enter Custom Limit',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
+
                           SizedBox(height: 12),
                           DropdownButtonFormField<String>(
                             value: selectOdType,
@@ -615,22 +632,27 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                             ),
                           ),
                           SizedBox(height: 12),
-                          TextFormField(
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter Phone ';
-                              } else if (value.length != 10) {
-                                return 'Please enter valid Phone number ';
+                          IntlPhoneField(
+                            controller: phoneController,
+                            initialCountryCode: 'IN',
+                            disableLengthCheck: true,
+                            keyboardType: TextInputType.phone,
+
+                            validator: (phone) {
+                              if (phone == null || phone.number.isEmpty) {
+                                return 'This field is required';
+                              } else if (phone.number.length < 8) {
+                                return 'Enter valid phone number';
                               }
                               return null;
                             },
-                            onSaved: (value) {
+
+                            onSaved: (phone) {
                               _user = UserModel(
                                 id: _user.id,
                                 name: _user.name,
                                 custId: _user.custId,
-                                phoneNo: value!,
+                                phoneNo: phone!.completeNumber, // +919876543210
                                 address: _user.address,
                                 place: _user.place,
                                 mailId: _user.mailId,
@@ -648,8 +670,11 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                 panCard: _user.panCard,
                                 pinCode: _user.pinCode,
                                 staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: _user.whatsappNo,
                               );
                             },
+
                             decoration: const InputDecoration(
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
@@ -663,7 +688,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                   width: 1.0,
                                 ),
                               ),
-                              labelText: 'Phone number',
+                              border: OutlineInputBorder(),
+                              labelText: 'Phone Number',
                             ),
                           ),
                           SizedBox(height: 10),
@@ -674,7 +700,87 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                             _buildGramField(),
                             const SizedBox(height: 16),
                           ],
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: sameAsPhone,
+                                onChanged: (value) {
+                                  setState(() {
+                                    sameAsPhone = value!;
+                                    if (sameAsPhone) {
+                                      whatsappController.text =
+                                          phoneController.text;
+                                    } else {
+                                      whatsappController.clear();
+                                    }
+                                  });
+                                },
+                              ),
+                              Text("Use Phone for WhatsApp"),
+                            ],
+                          ),
+                          SizedBox(height: 10),
                           TextFormField(
+                            controller: whatsappController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Address is required';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _user = UserModel(
+                                id: _user.id,
+                                name: _user.name,
+                                custId: _user.custId,
+                                phoneNo: _user.phoneNo,
+                                address: _user.address,
+                                place: _user.place,
+                                mailId: _user.mailId,
+                                staffId: _user.staffId,
+                                schemeType: _user.schemeType,
+                                balance: _user.balance,
+                                token: _user.token,
+                                totalGram: _user.totalGram,
+                                branch: _user.branch,
+                                dateofBirth: _user.dateofBirth,
+                                nominee: _user.nominee,
+                                nomineePhone: _user.nomineePhone,
+                                nomineeRelation: _user.nomineeRelation,
+                                adharCard: _user.adharCard,
+                                panCard: _user.panCard,
+                                pinCode: _user.pinCode,
+                                staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: value!,
+                              );
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.red,
+                                  width: 1.0,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.black,
+                                  width: 1.0,
+                                ),
+                              ),
+                              labelText: 'WhatsApp Number',
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Address is required';
+                              }
+                              return null;
+                            },
                             maxLines: 4,
                             onSaved: (value) {
                               _user = UserModel(
@@ -699,6 +805,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                 panCard: _user.panCard,
                                 pinCode: _user.pinCode,
                                 staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: _user.whatsappNo,
                               );
                             },
                             decoration: const InputDecoration(
@@ -785,6 +893,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                 panCard: _user.panCard,
                                 pinCode: _user.pinCode,
                                 staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: _user.whatsappNo,
                               );
                             },
                             decoration: const InputDecoration(
@@ -828,6 +938,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                 panCard: _user.panCard,
                                 pinCode: _user.pinCode,
                                 staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: _user.whatsappNo,
                               );
                             },
                             decoration: const InputDecoration(
@@ -855,42 +967,82 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                             ),
                           ),
                           SizedBox(height: 10),
-                          GestureDetector(
-                            onTap: () async {
-                              _selectDate();
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              height: MediaQuery.of(context).size.height * .074,
-                              decoration: BoxDecoration(
-                                // color: Colors.white,
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(color: Colors.black),
-                              ),
-                              padding: EdgeInsets.only(
-                                left: 10,
-                                right: 10,
-                                top: 8,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.calendar_today, size: 19),
-                                  Text(
-                                    selectedDate == null
-                                        ? DateFormat(' MMM dd yyyy').format(now)
-                                        : DateFormat(
-                                          ' MMM dd yyyy',
-                                        ).format(selectedDate!),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () async {
+                                  _selectDate();
+
+                                  // 👉 user date select cheythal error remove cheyyu
+                                  setState(() {
+                                    dobError = null;
+                                  });
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  height:
+                                      MediaQuery.of(context).size.height * .074,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(
+                                      color:
+                                          dobError != null
+                                              ? Colors.red
+                                              : Colors.black, // 🔥
+                                    ),
                                   ),
-                                ],
+                                  padding: EdgeInsets.only(
+                                    left: 10,
+                                    right: 10,
+                                    top: 8,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.calendar_today, size: 19),
+                                      Text(
+                                        selectedDate == null
+                                            ? DateFormat(
+                                              ' MMM dd yyyy',
+                                            ).format(now)
+                                            : DateFormat(
+                                              ' MMM dd yyyy',
+                                            ).format(selectedDate!),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
+
+                              // 🔴 ERROR TEXT
+                              if (dobError != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 5,
+                                    left: 12,
+                                  ),
+                                  child: Text(
+                                    dobError!,
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                           SizedBox(height: 10),
                           TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'This field is required';
+                              }
+                              return null;
+                            },
                             onSaved: (value) {
                               _user = UserModel(
                                 id: _user.id,
@@ -914,6 +1066,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                 panCard: _user.panCard,
                                 pinCode: _user.pinCode,
                                 staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: _user.whatsappNo,
                               );
                             },
                             decoration: const InputDecoration(
@@ -935,6 +1089,14 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                           SizedBox(height: 10),
                           TextFormField(
                             keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'This field is required';
+                              } else if (value.length < 8) {
+                                return 'Enter valid phone number';
+                              }
+                              return null;
+                            },
                             onSaved: (value) {
                               _user = UserModel(
                                 id: _user.id,
@@ -958,6 +1120,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                 panCard: _user.panCard,
                                 pinCode: _user.pinCode,
                                 staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: _user.whatsappNo,
                               );
                             },
                             decoration: const InputDecoration(
@@ -1001,6 +1165,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                 panCard: _user.panCard,
                                 pinCode: _user.pinCode,
                                 staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: _user.whatsappNo,
                               );
                             },
                             decoration: const InputDecoration(
@@ -1044,6 +1210,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                 panCard: _user.panCard,
                                 pinCode: _user.pinCode,
                                 staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: _user.whatsappNo,
                               );
                             },
                             decoration: const InputDecoration(
@@ -1087,6 +1255,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                 panCard: value,
                                 pinCode: _user.pinCode,
                                 staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: _user.whatsappNo,
                               );
                             },
                             decoration: const InputDecoration(
@@ -1131,6 +1301,8 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                                 panCard: _user.panCard,
                                 pinCode: value,
                                 staffName: _user.staffName,
+                                limit: '',
+                                whatsappNo: _user.whatsappNo,
                               );
                             },
                             decoration: const InputDecoration(

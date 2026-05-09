@@ -24,15 +24,15 @@ class PayAmountScreen extends StatefulWidget {
   final Map? user;
   final User? dbUser;
   final String? custName;
-  const PayAmountScreen(
-      {Key? key,
-      this.userid,
-      this.token,
-      this.balance,
-      this.dbUser,
-      this.user,
-      this.custName})
-      : super(key: key);
+  const PayAmountScreen({
+    Key? key,
+    this.userid,
+    this.token,
+    this.balance,
+    this.dbUser,
+    this.user,
+    this.custName,
+  }) : super(key: key);
 
   @override
   _PayAmountScreenState createState() => _PayAmountScreenState();
@@ -54,8 +54,8 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
   int? branchId;
   TextEditingController weightCntrl = TextEditingController();
   List goldrateList = [];
-  TextEditingController grampPerdayController = TextEditingController()
-    ..text = '0.0';
+  TextEditingController grampPerdayController =
+      TextEditingController()..text = '0.0';
   var _transaction = TransactionModel(
     id: '',
     customerName: '',
@@ -90,18 +90,24 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
 
     db = Staff();
     db!.initiliase();
-    db!.getAdminStaffToken(branchId!).then((value) => {
-          setState(() {
-            staffList = value!;
-            // isLoading = false;
-          })
-        });
-    dbGoldrate!.read().then((value) => {
-          setState(() {
-            goldrateList = value!;
-            grampPerdayController.text = goldrateList[0]['gram'].toString();
-          }),
-        });
+    db!
+        .getAdminStaffToken(branchId!)
+        .then(
+          (value) => {
+            setState(() {
+              staffList = value!;
+              // isLoading = false;
+            }),
+          },
+        );
+    dbGoldrate!.read().then(
+      (value) => {
+        setState(() {
+          goldrateList = value!;
+          grampPerdayController.text = goldrateList[0]['gram'].toString();
+        }),
+      },
+    );
   }
 
   var staffDetails;
@@ -120,21 +126,22 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
     // print(widget.custName);
     // print(widget.userid!);
     _transaction = TransactionModel(
-        customerName: widget.custName!,
-        customerId: widget.userid!,
-        date: selectedDate == null ? DateTime.now() : selectedDate!,
-        amount: _transaction.amount,
-        transactionType: _transaction.transactionType,
-        note: _transaction.note,
-        invoiceNo: _transaction.invoiceNo,
-        category: selectedValue,
-        discount: _transaction.discount,
-        staffId: staffDetails['id'],
-        gramPriceInvestDay: _transaction.gramPriceInvestDay,
-        gramWeight: _transaction.gramWeight,
-        id: _transaction.id,
-        branch: _transaction.branch,
-        staffName: staffDetails['staffName']);
+      customerName: widget.custName!,
+      customerId: widget.userid!,
+      date: selectedDate == null ? DateTime.now() : selectedDate!,
+      amount: _transaction.amount,
+      transactionType: _transaction.transactionType,
+      note: _transaction.note,
+      invoiceNo: _transaction.invoiceNo,
+      category: selectedValue,
+      discount: _transaction.discount,
+      staffId: staffDetails['id'],
+      gramPriceInvestDay: _transaction.gramPriceInvestDay,
+      gramWeight: _transaction.gramWeight,
+      id: _transaction.id,
+      branch: _transaction.branch,
+      staffName: staffDetails['staffName'],
+    );
     _collection = CollectionModel(
       staffId: staffDetails['id'],
       staffname: staffDetails['staffName'],
@@ -194,8 +201,8 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
             android: AndroidNotificationDetails(
               channel!.id,
               channel!.name,
-              // channel!.description,
 
+              // channel!.description,
               icon: 'launch_background',
             ),
           ),
@@ -222,17 +229,18 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
       /// default FCM channel to enable heads up notifications.
       await flutterLocalNotificationsPlugin!
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(channel!);
 
       /// Update the iOS foreground notification presentation options to allow
       /// heads up notifications.
       await FirebaseMessaging.instance
           .setForegroundNotificationPresentationOptions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+            alert: true,
+            badge: true,
+            sound: true,
+          );
     }
   }
 
@@ -287,22 +295,23 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
       'message': title,
     };
     try {
-      http.Response response =
-          await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
-              headers: <String, String>{
-                'Content-Type': 'application/json',
-                'Authorization':
-                    'key=AAAAYxF4bUQ:APA91bE-vvHQIfOI27flf420DjMEb1fkc0rlrFLz6N5HqVKvstpVEl-HzVmubii6ZDHDO5AYHVdvauIbGC0T-dS9yXskwgi4XVd38HOaix_hwBt7riU3tjDBdYx4mGAgglXPP3cEp5jX'
-              },
-              body: jsonEncode(<String, dynamic>{
-                'notification': <String, dynamic>{
-                  'title': title,
-                  'body': 'Add RS $amt to your account'
-                },
-                'priority': 'high',
-                'data': data,
-                'to': "$token"
-              }));
+      http.Response response = await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'key=AAAAYxF4bUQ:APA91bE-vvHQIfOI27flf420DjMEb1fkc0rlrFLz6N5HqVKvstpVEl-HzVmubii6ZDHDO5AYHVdvauIbGC0T-dS9yXskwgi4XVd38HOaix_hwBt7riU3tjDBdYx4mGAgglXPP3cEp5jX',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'notification': <String, dynamic>{
+            'title': title,
+            'body': 'Add RS $amt to your account',
+          },
+          'priority': 'high',
+          'data': data,
+          'to': "$token",
+        }),
+      );
 
       if (response.statusCode == 200) {
         // print("notification is sended");
@@ -329,22 +338,23 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
       'message': title,
     };
     try {
-      http.Response response =
-          await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
-              headers: <String, String>{
-                'Content-Type': 'application/json',
-                'Authorization':
-                    'key=AAAAYxF4bUQ:APA91bE-vvHQIfOI27flf420DjMEb1fkc0rlrFLz6N5HqVKvstpVEl-HzVmubii6ZDHDO5AYHVdvauIbGC0T-dS9yXskwgi4XVd38HOaix_hwBt7riU3tjDBdYx4mGAgglXPP3cEp5jX'
-              },
-              body: jsonEncode(<String, dynamic>{
-                'notification': <String, dynamic>{
-                  'title': title,
-                  'body': 'Collect amount $amt by $satffname'
-                },
-                'priority': 'high',
-                'data': data,
-                'to': "$token"
-              }));
+      http.Response response = await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'key=AAAAYxF4bUQ:APA91bE-vvHQIfOI27flf420DjMEb1fkc0rlrFLz6N5HqVKvstpVEl-HzVmubii6ZDHDO5AYHVdvauIbGC0T-dS9yXskwgi4XVd38HOaix_hwBt7riU3tjDBdYx4mGAgglXPP3cEp5jX',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'notification': <String, dynamic>{
+            'title': title,
+            'body': 'Collect amount $amt by $satffname',
+          },
+          'priority': 'high',
+          'data': data,
+          'to': "$token",
+        }),
+      );
 
       if (response.statusCode == 200) {
         // print("notification is sended");
@@ -420,18 +430,25 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
       );
       // print(selectedDate);
       // Await the transaction creation
-      var data = await Provider.of<TransactionProvider>(context, listen: false)
-          .create(_transaction, widget.user!["schemeType"], 0, "");
+      var data = await Provider.of<TransactionProvider>(
+        context,
+        listen: false,
+      ).create(_transaction, widget.user!["schemeType"], 0, "");
 
       // print(data);
 
       // Await collection creation
-      await Provider.of<Collection>(context, listen: false)
-          .create(_collection, data[3]);
+      await Provider.of<Collection>(
+        context,
+        listen: false,
+      ).create(_collection, data[3]);
 
       if (widget.token != null) {
         sendNotification(
-            "Transaction Completed", widget.token!, _transaction.amount);
+          "Transaction Completed",
+          widget.token!,
+          _transaction.amount,
+        );
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -459,300 +476,338 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
     }
   }
 
+  String? selectedPaymentMethod;
+  final List<String> paymentMethods = ["Cash", "UPI", "Bank Transfer"];
+
+  TextEditingController referenceController = TextEditingController();
+
   TextEditingController amtCntrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        backgroundColor: Colors.blueGrey.shade50,
-        appBar: AppBar(
-          backgroundColor: useColor.homeIconColor,
-          title: Text('Reciept'),
-          actions: [],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Container(
-            height: 700,
-            child: new SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text("Customer Name : ${widget.custName}"),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          "Customer Type : ",
-                        ),
-                        Text(
-                          "${widget.user!["schemeType"]}",
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: widget.user!['schemeType'] == "Fixed"
+      backgroundColor: Colors.blueGrey.shade50,
+      appBar: AppBar(
+        backgroundColor: useColor.homeIconColor,
+        title: Text('Reciept'),
+        actions: [],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Container(
+          height: 700,
+          child: new SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  SizedBox(height: 10),
+                  Text("Customer Name : ${widget.custName}"),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Text("Customer Type : "),
+                      Text(
+                        "${widget.user!["schemeType"]}",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color:
+                              widget.user!['schemeType'] == "Fixed"
                                   ? Color.fromARGB(255, 103, 142, 80)
-                                  : Color.fromARGB(255, 244, 82, 54)),
+                                  : Color.fromARGB(255, 244, 82, 54),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Text("Amount Limit : Rs. ${widget.user!["limit"]}"),
+                  SizedBox(height: 10),
+                  Text(
+                    "Recieve Staff : ${staffDetails != null ? staffDetails['staffName'] : ""}",
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: amtCntrl,
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Amount';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _updateWeight();
+                    },
+                    onSaved: (value) {
+                      _transaction = TransactionModel(
+                        customerName: _transaction.customerName,
+                        customerId: _transaction.customerId,
+                        date:
+                            selectedDate == null
+                                ? DateTime.now()
+                                : selectedDate!,
+                        amount:
+                            value != ""
+                                ? double.parse(value!)
+                                : double.parse(0.0.toString()),
+                        transactionType: _transaction.transactionType,
+                        note: _transaction.note,
+                        invoiceNo: _transaction.invoiceNo,
+                        category: _transaction.category,
+                        discount: _transaction.discount,
+                        staffId: _transaction.staffId,
+                        gramPriceInvestDay: _transaction.gramPriceInvestDay,
+                        gramWeight: _transaction.gramWeight,
+                        id: _transaction.id,
+                        branch: _transaction.branch,
+                        staffName: _transaction.staffName,
+                      );
+                    },
+                    decoration: const InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      labelText: 'Enter amount given',
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  TextFormField(
+                    controller: weightCntrl,
+                    keyboardType: TextInputType.number,
+                    onChanged: (val) {
+                      _updateAmount();
+                    },
+                    decoration: const InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      labelText: 'Weight for Given Amount',
+                    ),
+                  ),
+                  SizedBox(height: 20),
+
+                  DropdownButtonFormField<String>(
+                    value: selectedPaymentMethod,
+                    hint: Text('Select Payment Method'),
+
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Select payment method';
+                      }
+                      return null;
+                    },
+
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedPaymentMethod = newValue;
+
+                        // clear reference id if cash
+                        if (newValue == "Cash") {
+                          referenceController.clear();
+                        }
+                      });
+                    },
+
+                    items:
+                        paymentMethods.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+
+                    decoration: InputDecoration(
+                      labelText: 'Payment Method',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  if (selectedPaymentMethod == "UPI" ||
+                      selectedPaymentMethod == "Bank Transfer")
+                    Column(
+                      children: [
+                        SizedBox(height: 15),
+                        TextFormField(
+                          controller: referenceController,
+
+                          validator: (value) {
+                            if ((selectedPaymentMethod == "UPI" ||
+                                    selectedPaymentMethod == "Bank Transfer") &&
+                                (value == null || value.isEmpty)) {
+                              return 'Enter Reference ID';
+                            }
+                            return null;
+                          },
+
+                          decoration: InputDecoration(
+                            labelText: 'Reference / Transaction ID',
+                            border: OutlineInputBorder(),
+                          ),
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text("Amount Limit : Rs. ${widget.user!["limit"]}"),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                        "Recieve Staff : ${staffDetails != null ? staffDetails['staffName'] : ""}"),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      controller: amtCntrl,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Amount';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        _updateWeight();
-                      },
-                      onSaved: (value) {
-                        _transaction = TransactionModel(
-                            customerName: _transaction.customerName,
-                            customerId: _transaction.customerId,
-                            date: selectedDate == null
+                  SizedBox(height: 30),
+                  TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Note';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _transaction = TransactionModel(
+                        customerName: _transaction.customerName,
+                        customerId: _transaction.customerId,
+                        date:
+                            selectedDate == null
                                 ? DateTime.now()
                                 : selectedDate!,
-                            amount: value != ""
+                        amount: _transaction.amount,
+                        transactionType: _transaction.transactionType,
+                        note: "${_transaction.note} | Payment: $selectedPaymentMethod ${referenceController.text.isNotEmpty ? "| Ref: ${referenceController.text}" : ""}",
+                        invoiceNo: _transaction.invoiceNo,
+                        category: _transaction.category,
+                        discount: _transaction.discount,
+                        staffId: _transaction.staffId,
+                        gramPriceInvestDay: _transaction.gramPriceInvestDay,
+                        gramWeight: _transaction.gramWeight,
+                        id: _transaction.id,
+                        branch: _transaction.branch,
+                        staffName: _transaction.staffName,
+                      );
+                    },
+                    maxLines: 8,
+                    decoration: const InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      labelText: 'Enter Description',
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  TextFormField(
+                    controller: grampPerdayController,
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'gramprice';
+                      }
+                      return null;
+                    },
+                    onChanged: (val) {
+                      print("----");
+                      _updateAmountAndWeight();
+                    },
+                    onSaved: (value) {
+                      _transaction = TransactionModel(
+                        customerName: _transaction.customerName,
+                        customerId: _transaction.customerId,
+                        date:
+                            selectedDate == null
+                                ? DateTime.now()
+                                : selectedDate!,
+                        amount: _transaction.amount,
+                        transactionType: _transaction.transactionType,
+                        note: _transaction.note,
+                        invoiceNo: _transaction.invoiceNo,
+                        category: _transaction.category,
+                        discount: _transaction.discount,
+                        staffId: _transaction.staffId,
+                        gramPriceInvestDay:
+                            value != ""
                                 ? double.parse(value!)
                                 : double.parse(0.0.toString()),
-                            transactionType: _transaction.transactionType,
-                            note: _transaction.note,
-                            invoiceNo: _transaction.invoiceNo,
-                            category: _transaction.category,
-                            discount: _transaction.discount,
-                            staffId: _transaction.staffId,
-                            gramPriceInvestDay: _transaction.gramPriceInvestDay,
-                            gramWeight: _transaction.gramWeight,
-                            id: _transaction.id,
-                            branch: _transaction.branch,
-                            staffName: _transaction.staffName);
-                      },
-                      decoration: const InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.red,
-                            width: 1.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.black,
-                            width: 1.0,
-                          ),
-                        ),
-                        labelText: 'Enter amount given',
+                        gramWeight: _transaction.gramWeight,
+                        id: _transaction.id,
+                        branch: _transaction.branch,
+                        staffName: _transaction.staffName,
+                      );
+                    },
+                    decoration: const InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
                       ),
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    TextFormField(
-                      controller: weightCntrl,
-                      keyboardType: TextInputType.number,
-                      onChanged: (val) {
-                        _updateAmount();
-                      },
-                      decoration: const InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.red,
-                            width: 1.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.black,
-                            width: 1.0,
-                          ),
-                        ),
-                        labelText: 'Weight for Given Amount',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
                       ),
+                      labelText: 'Enter invest gram rate',
                     ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    TextFormField(
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Note';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _transaction = TransactionModel(
-                          customerName: _transaction.customerName,
-                          customerId: _transaction.customerId,
-                          date: selectedDate == null
-                              ? DateTime.now()
-                              : selectedDate!,
-                          amount: _transaction.amount,
-                          transactionType: _transaction.transactionType,
-                          note: value!,
-                          invoiceNo: _transaction.invoiceNo,
-                          category: _transaction.category,
-                          discount: _transaction.discount,
-                          staffId: _transaction.staffId,
-                          gramPriceInvestDay: _transaction.gramPriceInvestDay,
-                          gramWeight: _transaction.gramWeight,
-                          id: _transaction.id,
-                          branch: _transaction.branch,
-                          staffName: _transaction.staffName,
-                        );
-                      },
-                      maxLines: 8,
-                      decoration: const InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.red,
-                            width: 1.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.black,
-                            width: 1.0,
-                          ),
-                        ),
-                        labelText: 'Enter Description',
+                  ),
+                  SizedBox(height: 30),
+                  GestureDetector(
+                    onTap: () async {
+                      _selectDate();
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: MediaQuery.of(context).size.height * .074,
+                      decoration: BoxDecoration(
+                        // color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: Colors.black),
                       ),
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    TextFormField(
-                      controller: grampPerdayController,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'gramprice';
-                        }
-                        return null;
-                      },
-                      onChanged: (val) {
-                        print("----");
-                        _updateAmountAndWeight();
-                      },
-                      onSaved: (value) {
-                        _transaction = TransactionModel(
-                          customerName: _transaction.customerName,
-                          customerId: _transaction.customerId,
-                          date: selectedDate == null
-                              ? DateTime.now()
-                              : selectedDate!,
-                          amount: _transaction.amount,
-                          transactionType: _transaction.transactionType,
-                          note: _transaction.note,
-                          invoiceNo: _transaction.invoiceNo,
-                          category: _transaction.category,
-                          discount: _transaction.discount,
-                          staffId: _transaction.staffId,
-                          gramPriceInvestDay: value != ""
-                              ? double.parse(value!)
-                              : double.parse(0.0.toString()),
-                          gramWeight: _transaction.gramWeight,
-                          id: _transaction.id,
-                          branch: _transaction.branch,
-                          staffName: _transaction.staffName,
-                        );
-                      },
-                      decoration: const InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.red,
-                            width: 1.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.black,
-                            width: 1.0,
-                          ),
-                        ),
-                        labelText: 'Enter invest gram rate',
-                      ),
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        _selectDate();
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: MediaQuery.of(context).size.height * .074,
-                        decoration: BoxDecoration(
-                            // color: Colors.white,
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: Colors.black)),
-                        padding: EdgeInsets.only(left: 10, right: 10, top: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.calendar_today,
-                              size: 19,
-                            ),
-                            Text(selectedDate == null
+                      padding: EdgeInsets.only(left: 10, right: 10, top: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.calendar_today, size: 19),
+                          Text(
+                            selectedDate == null
                                 ? DateFormat(' MMM dd yyyy').format(now)
-                                : DateFormat(' MMM dd yyyy')
-                                    .format(selectedDate!)),
-                          ],
-                        ),
+                                : DateFormat(
+                                  ' MMM dd yyyy',
+                                ).format(selectedDate!),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                          width: MediaQuery.of(context).size.width * .4,
-                          height: MediaQuery.of(context).size.height * .06,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: useColor.homeIconColor),
-                          child: TextButton(
-                            onPressed: isLoad
+                  ),
+                  SizedBox(height: 30),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * .4,
+                      height: MediaQuery.of(context).size.height * .06,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: useColor.homeIconColor,
+                      ),
+                      child: TextButton(
+                        onPressed:
+                            isLoad
                                 ? null
                                 : _saveForm, // Disable button when loading
-                            child: isLoad
-                                ? Text('Saving...',
-                                    style: TextStyle(color: Colors.white))
-                                : Text('Save',
-                                    style: TextStyle(color: Colors.white)),
-                          )),
+                        child:
+                            isLoad
+                                ? Text(
+                                  'Saving...',
+                                  style: TextStyle(color: Colors.white),
+                                )
+                                : Text(
+                                  'Save',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-        )
-        // ),
-        );
+        ),
+      ),
+      // ),
+    );
   }
 
   void _updateWeight() {
