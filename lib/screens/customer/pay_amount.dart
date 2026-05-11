@@ -15,6 +15,7 @@ import '../../providers/staff.dart';
 import 'package:intl/intl.dart';
 import '../../providers/goldrate.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import '../../service/whatsapp_service.dart';
 
 class PayAmountScreen extends StatefulWidget {
   static const routeName = "/pay-amount";
@@ -449,6 +450,23 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
           widget.token!,
           _transaction.amount,
         );
+      }
+
+      // Send WhatsApp Alert
+      try {
+        final phone = widget.user?['phoneNo'] ?? '';
+        if (phone.isNotEmpty) {
+          await WhatsAppService.sendTransactionAlert(
+            phone: phone,
+            customerName: widget.custName ?? 'Customer',
+            transactionType: "Receipt (Payment)",
+            amount: _transaction.amount,
+            balance: data[0], // new balance from transaction creation
+            date: _transaction.date,
+          );
+        }
+      } catch (e) {
+        print("WhatsApp alert failed: $e");
       }
 
       ScaffoldMessenger.of(context).showSnackBar(

@@ -13,6 +13,7 @@ import '../../providers/goldrate.dart';
 import '../../providers/transaction.dart';
 import '../../providers/user.dart';
 import 'setOpeningBalance.dart';
+import '../../service/whatsapp_service.dart';
 
 enum PurchaseOption { byCash, byGram }
 
@@ -260,7 +261,10 @@ class _PurchaseAmountScreenState extends State<PurchaseAmountScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await Provider.of<TransactionProvider>(context, listen: false).create(
+      var data = await Provider.of<TransactionProvider>(
+        context,
+        listen: false,
+      ).create(
         _transaction,
         widget.user!["schemeType"],
         widget.totalGram!,
@@ -273,6 +277,23 @@ class _PurchaseAmountScreenState extends State<PurchaseAmountScreen> {
           widget.token!,
           _transaction.amount,
         );
+      }
+
+      // Send WhatsApp Alert
+      try {
+        final phone = widget.user?['phoneNo'] ?? '';
+        if (phone.isNotEmpty) {
+          await WhatsAppService.sendTransactionAlert(
+            phone: phone,
+            customerName: widget.custName ?? 'Customer',
+            transactionType: "Purchase",
+            amount: _transaction.amount,
+            balance: data[0], // new balance from transaction creation
+            date: _transaction.date,
+          );
+        }
+      } catch (e) {
+        print("WhatsApp alert failed: $e");
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
