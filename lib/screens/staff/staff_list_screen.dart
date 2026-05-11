@@ -27,14 +27,16 @@ class _StaffListScreenState extends State<StaffListScreen> {
   initialise() {
     db = Staff();
     db!.initiliase();
-    db!.read().then((value) => {
-          setState(() {
-            staffList = value!;
+    db!.read().then(
+      (value) => {
+        setState(() {
+          staffList = value!;
 
-            // print(staffList);
-            isLoading = false;
-          }),
-        });
+          // print(staffList);
+          isLoading = false;
+        }),
+      },
+    );
   }
 
   bool ifType = false;
@@ -66,13 +68,16 @@ class _StaffListScreenState extends State<StaffListScreen> {
     try {
       try {
         Provider.of<Staff>(context, listen: false).delete(id).then((value) {
-          final snackBar =
-              SnackBar(content: const Text('Deleted Successfully !'));
+          final snackBar = SnackBar(
+            content: const Text('Deleted Successfully !'),
+          );
 
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => StaffListScreen()));
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => StaffListScreen()),
+          );
           setState(() {});
         });
 
@@ -99,18 +104,19 @@ class _StaffListScreenState extends State<StaffListScreen> {
         print(err);
         await showDialog(
           context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('An error occurred!'),
-            content: Text('Something went wrong. ${err}'),
-            actions: <Widget>[
-              OutlinedButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              )
-            ],
-          ),
+          builder:
+              (ctx) => AlertDialog(
+                title: Text('An error occurred!'),
+                content: Text('Something went wrong. ${err}'),
+                actions: <Widget>[
+                  OutlinedButton(
+                    child: Text('Okay'),
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                    },
+                  ),
+                ],
+              ),
         );
       }
       setState(() {
@@ -128,20 +134,21 @@ class _StaffListScreenState extends State<StaffListScreen> {
         title: Text('Staffs'),
         actions: [
           Padding(
-              padding: EdgeInsets.only(right: 20.0, top: 8, bottom: 8),
-              child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => StaffReciept()));
-                  },
-                  style:
-                      OutlinedButton.styleFrom(backgroundColor: Colors.black26),
-                  child: Text(
-                    "Payment Recive",
-                    style: TextStyle(color: Colors.white),
-                  ))),
+            padding: EdgeInsets.only(right: 20.0, top: 8, bottom: 8),
+            child: OutlinedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => StaffReciept()),
+                );
+              },
+              style: OutlinedButton.styleFrom(backgroundColor: Colors.black26),
+              child: Text(
+                "Payment Recive",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -150,15 +157,13 @@ class _StaffListScreenState extends State<StaffListScreen> {
         foregroundColor: Colors.white,
         onPressed: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => CreateStaffScreen(
-                        staffType: 0,
-                      ))).then(
-            (value) {
-              initialise();
-            },
-          );
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateStaffScreen(staffType: 0),
+            ),
+          ).then((value) {
+            initialise();
+          });
         },
       ),
       body: Padding(
@@ -166,9 +171,10 @@ class _StaffListScreenState extends State<StaffListScreen> {
         child: Column(
           children: <Widget>[
             Expanded(
-                child: staffList.isNotEmpty
-                    ? staffList.length > 0
-                        ? ListView.builder(
+              child:
+                  staffList.isNotEmpty
+                      ? staffList.length > 0
+                          ? ListView.builder(
                             itemCount: staffList.length,
                             itemBuilder: (BuildContext context, int index) {
                               // print(staffList[index]['type']);
@@ -178,44 +184,44 @@ class _StaffListScreenState extends State<StaffListScreen> {
                                     onTap: () {},
                                     child: Container(
                                       padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 5,
-                                          top: 5,
-                                          bottom: 10),
+                                        left: 20,
+                                        right: 5,
+                                        top: 5,
+                                        bottom: 10,
+                                      ),
                                       height: 100,
                                       width: double.maxFinite,
                                       decoration: BoxDecoration(
-                                          border: Border.all(
-                                              width: .1,
-                                              color: Colors.blueGrey,
-                                              style: BorderStyle.solid),
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
+                                        border: Border.all(
+                                          width: .1,
+                                          color: Colors.blueGrey,
+                                          style: BorderStyle.solid,
+                                        ),
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
                                       child: Row(
                                         children: [
                                           CircleAvatar(
-                                              backgroundColor: Colors.blueGrey,
-                                              child: Icon(
-                                                Icons.account_box,
-                                                color: Colors.white,
-                                              )),
-                                          SizedBox(
-                                            width: 20,
+                                            backgroundColor: Colors.blueGrey,
+                                            child: Icon(
+                                              Icons.account_box,
+                                              color: Colors.white,
+                                            ),
                                           ),
+                                          SizedBox(width: 20),
                                           Container(
                                             width: 1,
                                             height: 50,
                                             color: Colors.blueGrey.shade100,
                                           ),
-                                          SizedBox(
-                                            width: 20,
-                                          ),
+                                          SizedBox(width: 20),
                                           Container(
                                             height: double.infinity,
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
+                                            width:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.width *
                                                 .4,
                                             child: Column(
                                               mainAxisAlignment:
@@ -227,226 +233,301 @@ class _StaffListScreenState extends State<StaffListScreen> {
                                                   ' ${staffList[index]['staffName']}'
                                                       .toUpperCase(),
                                                   style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
-                                                SizedBox(
-                                                  height: 3,
-                                                ),
+                                                SizedBox(height: 3),
                                                 Text(
                                                   staffList[index]['phoneNo'],
                                                   style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: Colors
-                                                          .blueGrey.shade300),
+                                                    fontWeight: FontWeight.w400,
+                                                    color:
+                                                        Colors
+                                                            .blueGrey
+                                                            .shade300,
+                                                  ),
                                                 ),
                                               ],
                                             ),
                                           ),
                                           Flexible(
                                             child: Container(
-                                                child: Align(
-                                                    alignment:
-                                                        Alignment.topRight,
-                                                    child: PopupMenuButton(
-                                                        icon: Icon(
-                                                          FontAwesomeIcons
-                                                              .ellipsisVertical,
-                                                          color:
-                                                              Colors.blueGrey,
-                                                        ),
-                                                        itemBuilder:
-                                                            (BuildContext
-                                                                context) {
-                                                          return [
-                                                            PopupMenuItem(
-                                                                child:
-                                                                    GestureDetector(
-                                                                        onTap:
-                                                                            () {
-                                                                          Navigator.pop(
-                                                                              context);
-                                                                          Navigator.push(
-                                                                              context,
-                                                                              MaterialPageRoute(builder: (context) => StaffViewScreen(db: db!, staff: staffList[index])));
-                                                                        },
-                                                                        child:
-                                                                            Row(
-                                                                          children: [
-                                                                            Icon(
-                                                                              Icons.notes,
-                                                                              color: Colors.blue,
-                                                                            ),
-                                                                            SizedBox(
-                                                                              width: 5,
-                                                                            ),
-                                                                            Flexible(
-                                                                              child: Text(
-                                                                                " ${staffList[index]['staffName']}" + "'S Customers",
-                                                                                style: TextStyle(fontSize: 16),
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ))),
-                                                            PopupMenuItem(
-                                                                child:
-                                                                    GestureDetector(
-                                                                        onTap:
-                                                                            () {
-                                                                          Navigator.pop(
-                                                                              context);
-                                                                          Navigator.push(
-                                                                              context,
-                                                                              MaterialPageRoute(builder: (context) => StaffReprotScreen(db: db!, staff: staffList[index], commission: staffList[index]["commission"])));
-                                                                        },
-                                                                        child:
-                                                                            Row(
-                                                                          children: [
-                                                                            Icon(
-                                                                              Icons.notes,
-                                                                              color: Colors.blue,
-                                                                            ),
-                                                                            Text(" Staff Report "),
-                                                                          ],
-                                                                        ))),
-                                                            PopupMenuItem(
-                                                                child:
-                                                                    GestureDetector(
-                                                                        onTap:
-                                                                            () {
-                                                                          Navigator.pop(
-                                                                              context);
-                                                                          Navigator.push(
-                                                                              context,
-                                                                              MaterialPageRoute(
-                                                                                  builder: (context) => PaymentReport(
-                                                                                        staffid: staffList[index]['id'],
-                                                                                      )));
-                                                                        },
-                                                                        child:
-                                                                            Row(
-                                                                          children: [
-                                                                            Icon(
-                                                                              Icons.notes,
-                                                                              color: Colors.blue,
-                                                                            ),
-                                                                            Text("Collection Report "),
-                                                                          ],
-                                                                        ))),
-                                                            PopupMenuItem(
-                                                                child:
-                                                                    GestureDetector(
-                                                              onTap: () {
-                                                                Navigator.pop(
-                                                                    context);
-                                                                Navigator.pushReplacement(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                        builder: (context) => UpdateStaffScreen(
-                                                                            db:
-                                                                                db!,
-                                                                            staff:
-                                                                                staffList[index])));
-                                                              },
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceEvenly,
-                                                                children: [
-                                                                  Icon(
-                                                                    Icons.edit,
-                                                                    color: Colors
-                                                                        .blueGrey,
-                                                                  ),
-                                                                  Text("Edit")
-                                                                ],
+                                              child: Align(
+                                                alignment: Alignment.topRight,
+                                                child: PopupMenuButton(
+                                                  icon: Icon(
+                                                    FontAwesomeIcons
+                                                        .ellipsisVertical,
+                                                    color: Colors.blueGrey,
+                                                  ),
+                                                  itemBuilder: (
+                                                    BuildContext context,
+                                                  ) {
+                                                    return [
+                                                      PopupMenuItem(
+                                                        child: GestureDetector(
+                                                          onTap: () {
+                                                            Navigator.pop(
+                                                              context,
+                                                            );
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (
+                                                                      context,
+                                                                    ) => StaffViewScreen(
+                                                                      db: db!,
+                                                                      staff:
+                                                                          staffList[index],
+                                                                    ),
                                                               ),
-                                                            )),
-                                                            PopupMenuItem(
-                                                                child: staffList[index]
-                                                                            [
-                                                                            'id'] !=
-                                                                        staffId
-                                                                    ? GestureDetector(
-                                                                        onTap:
-                                                                            () {
-                                                                          showDialog(
-                                                                              context: context,
-                                                                              builder: (context) {
-                                                                                return AlertDialog(
-                                                                                  content: Container(
-                                                                                    width: 300,
-                                                                                    height: 100,
-                                                                                    child: Column(
-                                                                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                      children: [
-                                                                                        Text("Do You Want To Delete...!"),
-                                                                                        Row(
-                                                                                          mainAxisAlignment: MainAxisAlignment.end,
-                                                                                          children: [
-                                                                                            GestureDetector(
-                                                                                                onTap: () {
-                                                                                                  Navigator.pop(context);
-                                                                                                },
-                                                                                                child: Text("Cancel")),
-                                                                                            SizedBox(
-                                                                                              width: 20,
-                                                                                            ),
-                                                                                            GestureDetector(
-                                                                                                onTap: () {
-                                                                                                  Navigator.pop(context);
-                                                                                                  _delete(staffList[index]['id']);
-                                                                                                },
-                                                                                                child: Text("Ok"))
-                                                                                          ],
-                                                                                        )
-                                                                                      ],
+                                                            );
+                                                          },
+                                                          child: Row(
+                                                            children: [
+                                                              Icon(
+                                                                Icons.notes,
+                                                                color:
+                                                                    Colors.blue,
+                                                              ),
+                                                              SizedBox(
+                                                                width: 5,
+                                                              ),
+                                                              Flexible(
+                                                                child: Text(
+                                                                  " ${staffList[index]['staffName']}" +
+                                                                      "'s Customers",
+                                                                  style:
+                                                                      TextStyle(
+                                                                        fontSize:
+                                                                            16,
+                                                                      ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      PopupMenuItem(
+                                                        child: GestureDetector(
+                                                          onTap: () {
+                                                            Navigator.pop(
+                                                              context,
+                                                            );
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (
+                                                                      context,
+                                                                    ) => StaffReprotScreen(
+                                                                      db: db!,
+                                                                      staff:
+                                                                          staffList[index],
+                                                                      commission:
+                                                                          staffList[index]["commission"],
+                                                                    ),
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: Row(
+                                                            children: [
+                                                              Icon(
+                                                                Icons.notes,
+                                                                color:
+                                                                    Colors.blue,
+                                                              ),
+                                                              Text(
+                                                                " Staff Report ",
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      PopupMenuItem(
+                                                        child: GestureDetector(
+                                                          onTap: () {
+                                                            Navigator.pop(
+                                                              context,
+                                                            );
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (
+                                                                      context,
+                                                                    ) => PaymentReport(
+                                                                      staffid:
+                                                                          staffList[index]['id'],
+                                                                    ),
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: Row(
+                                                            children: [
+                                                              Icon(
+                                                                Icons.notes,
+                                                                color:
+                                                                    Colors.blue,
+                                                              ),
+                                                              Text(
+                                                                "Collection Report ",
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      PopupMenuItem(
+                                                        child: GestureDetector(
+                                                          onTap: () {
+                                                            Navigator.pop(
+                                                              context,
+                                                            );
+                                                            Navigator.pushReplacement(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (
+                                                                      context,
+                                                                    ) => UpdateStaffScreen(
+                                                                      db: db!,
+                                                                      staff:
+                                                                          staffList[index],
+                                                                    ),
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceEvenly,
+                                                            children: [
+                                                              Icon(
+                                                                Icons.edit,
+                                                                color:
+                                                                    Colors
+                                                                        .blueGrey,
+                                                              ),
+                                                              Text("Edit"),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      PopupMenuItem(
+                                                        child:
+                                                            staffList[index]['id'] !=
+                                                                    staffId
+                                                                ? GestureDetector(
+                                                                  onTap: () {
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder: (
+                                                                        context,
+                                                                      ) {
+                                                                        return AlertDialog(
+                                                                          content: Container(
+                                                                            width:
+                                                                                300,
+                                                                            height:
+                                                                                100,
+                                                                            child: Column(
+                                                                              mainAxisAlignment:
+                                                                                  MainAxisAlignment.spaceAround,
+                                                                              crossAxisAlignment:
+                                                                                  CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                Text(
+                                                                                  "Do You Want To Delete...!",
+                                                                                ),
+                                                                                Row(
+                                                                                  mainAxisAlignment:
+                                                                                      MainAxisAlignment.end,
+                                                                                  children: [
+                                                                                    GestureDetector(
+                                                                                      onTap: () {
+                                                                                        Navigator.pop(
+                                                                                          context,
+                                                                                        );
+                                                                                      },
+                                                                                      child: Text(
+                                                                                        "Cancel",
+                                                                                      ),
                                                                                     ),
-                                                                                  ),
-                                                                                );
-                                                                              });
-                                                                        },
-
-                                                                        ///
-                                                                        child:
-                                                                            Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceEvenly,
-                                                                          children: [
-                                                                            Icon(
-                                                                              Icons.delete,
-                                                                              color: Colors.red,
+                                                                                    SizedBox(
+                                                                                      width:
+                                                                                          20,
+                                                                                    ),
+                                                                                    GestureDetector(
+                                                                                      onTap: () {
+                                                                                        Navigator.pop(
+                                                                                          context,
+                                                                                        );
+                                                                                        _delete(
+                                                                                          staffList[index]['id'],
+                                                                                        );
+                                                                                      },
+                                                                                      child: Text(
+                                                                                        "Ok",
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ],
                                                                             ),
-                                                                            Text("Delete")
-                                                                          ],
-                                                                        ),
-                                                                      )
-                                                                    : Container()),
-                                                          ];
-                                                        }))),
-                                          )
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  },
+
+                                                                  ///
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceEvenly,
+                                                                    children: [
+                                                                      Icon(
+                                                                        Icons
+                                                                            .delete,
+                                                                        color:
+                                                                            Colors.red,
+                                                                      ),
+                                                                      Text(
+                                                                        "Delete",
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                )
+                                                                : Container(),
+                                                      ),
+                                                    ];
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
                                   ),
-                                  Divider(
-                                    height: 10,
-                                  ),
+                                  Divider(height: 10),
                                 ],
                               );
-                            })
-                        : Center(
+                            },
+                          )
+                          : Center(
                             child: Text(
                               "No data Available",
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                             ),
                           )
-                    : Center(
-                        child: CircularProgressIndicator(),
-                      ))
+                      : Center(child: CircularProgressIndicator()),
+            ),
           ],
         ),
       ),

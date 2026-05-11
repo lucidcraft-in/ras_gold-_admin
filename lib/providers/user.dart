@@ -772,16 +772,35 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<List?> readBystaffId(String staffId) async {
+  Future<List?> readBystaffId(String staffId,
+      {DateTime? startDate, DateTime? endDate}) async {
     QuerySnapshot querySnapshot;
     List userlist = [];
     double totalBalance = 0;
     try {
-      querySnapshot = await collectionReference.orderBy('timestamp').get();
+      querySnapshot =
+          await collectionReference.where('staffId', isEqualTo: staffId).get();
 
       if (querySnapshot.docs.isNotEmpty) {
         for (var doc in querySnapshot.docs.toList()) {
-          if (staffId == doc['staffId']) {
+          bool include = true;
+          if (startDate != null || endDate != null) {
+            if (doc['timestamp'] != null) {
+              DateTime createdDate = (doc['timestamp'] as Timestamp).toDate();
+              if (startDate != null &&
+                  createdDate.isBefore(
+                      DateTime(startDate.year, startDate.month, startDate.day)))
+                include = false;
+              if (endDate != null &&
+                  createdDate.isAfter(DateTime(
+                      endDate.year, endDate.month, endDate.day, 23, 59, 59)))
+                include = false;
+            } else {
+              include = false;
+            }
+          }
+
+          if (include) {
             Map a = {
               "id": doc.id,
               "name": doc['name'],
@@ -801,6 +820,7 @@ class User with ChangeNotifier {
               "panCard": doc['panCard'],
               "pinCode": doc['pinCode'],
               "staffName": doc['staffName'],
+              "timestamp": doc['timestamp'],
             };
 
             userlist.add(a);
@@ -808,10 +828,19 @@ class User with ChangeNotifier {
           }
         }
 
+        // Sort by timestamp if needed, since we removed orderBy('timestamp') to avoid index requirement
+        userlist.sort((a, b) {
+          Timestamp t1 = a['timestamp'] ?? Timestamp.now();
+          Timestamp t2 = b['timestamp'] ?? Timestamp.now();
+          return t2.compareTo(t1); // Descending
+        });
+
         return [userlist, totalBalance];
       }
+      return [[], 0.0];
     } catch (e) {
       print(e);
+      return [[], 0.0];
     }
   }
 

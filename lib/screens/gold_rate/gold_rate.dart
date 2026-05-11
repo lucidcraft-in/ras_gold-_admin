@@ -838,7 +838,7 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
       if (value != null && value.isNotEmpty) {
         setState(() {
           goldrateList = value;
-
+          gramController.text = goldrateList[0]['gram'].toString();
           pavanController.text = goldrateList[0]['pavan'].toString();
           upController.text = goldrateList[0]['up'].toString();
           downController.text = goldrateList[0]['down'].toString();
@@ -890,6 +890,7 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
     }
 
     setState(() {
+      gramController.text = gramVal.toString();
       pavanController.text = pavanCalc.toString();
       upController.text = upCalc.toString();
       downController.text = downCalc.toString();
@@ -930,27 +931,29 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
     final data = {'click_action': 'FLUTTER_NOTIFICATION_CLICK', 'id': 1};
 
     try {
-      http.Response response =
-          await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization':
-                    'key=AAAAYxF4bUQ:APA91bE-vvHQIfOI27flf420DjMEb1fkc0rlrFLz6N5HqVKvstpVEl-HzVmubii6ZDHDO5AYHVdvauIbGC0T-dS9yXskwgi4XVd38HOaix_hwBt7riU3tjDBdYx4mGAgglXPP3cEp5jX'
-              },
-              body: jsonEncode({
-                'notification': {
-                  'title': title,
-                  'body':
-                      'Today gold rate ${goldrateList[0]['pavan'].toString()}'
-                },
-                'priority': 'high',
-                'data': data,
-                'to': "$token"
-              }));
+      http.Response response = await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+              'key=AAAAYxF4bUQ:APA91bE-vvHQIfOI27flf420DjMEb1fkc0rlrFLz6N5HqVKvstpVEl-HzVmubii6ZDHDO5AYHVdvauIbGC0T-dS9yXskwgi4XVd38HOaix_hwBt7riU3tjDBdYx4mGAgglXPP3cEp5jX',
+        },
+        body: jsonEncode({
+          'notification': {
+            'title': title,
+            'body': 'Today gold rate ${goldrateList[0]['pavan'].toString()}',
+          },
+          'priority': 'high',
+          'data': data,
+          'to': "$token",
+        }),
+      );
 
-      print(response.statusCode == 200
-          ? "notification sent"
-          : "notification failed");
+      print(
+        response.statusCode == 200
+            ? "notification sent"
+            : "notification failed",
+      );
     } catch (e) {}
   }
 
@@ -988,19 +991,22 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
 
       await showDialog(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text('Success!'),
-          content: Text('Updated Successfully'),
-          actions: <Widget>[
-            OutlinedButton(
-              child: Text('Okay'),
-              onPressed: () {
-                Navigator.pushReplacementNamed(
-                    context, GoldRateScreen.routeName);
-              },
-            )
-          ],
-        ),
+        builder:
+            (ctx) => AlertDialog(
+              title: Text('Success!'),
+              content: Text('Updated Successfully'),
+              actions: <Widget>[
+                OutlinedButton(
+                  child: Text('Okay'),
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(
+                      context,
+                      GoldRateScreen.routeName,
+                    );
+                  },
+                ),
+              ],
+            ),
       );
     } catch (err) {
       print(err);
@@ -1013,15 +1019,16 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
   Widget build(BuildContext context) {
     // UI NOT CHANGED
     return Scaffold(
-        backgroundColor: Colors.blueGrey.shade50,
-        appBar: AppBar(
-          backgroundColor: useColor.homeIconColor,
-          title: Text('Gold Rate'),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Container(child: existingUi(context)),
-        ));
+      backgroundColor: Colors.blueGrey.shade50,
+      appBar: AppBar(
+        backgroundColor: useColor.homeIconColor,
+        title: Text('Gold Rate'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Container(child: existingUi(context)),
+      ),
+    );
   }
 
   Widget existingUi(BuildContext context) {
@@ -1029,25 +1036,26 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
     /// I ONLY WRAPPED THEM TO KEEP FILE CLEAN
     return goldrateList.isNotEmpty
         ? SingleChildScrollView(
-            child: Column(
-              children: [
-                Form(
-                  key: _formKey,
-                  child: Container(
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height * .6,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: buildUpdateForm(),
-                    ),
+          child: Column(
+            children: [
+              Form(
+                key: _formKey,
+                child: Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * .6,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: buildUpdateForm(),
                   ),
                 ),
-              ],
-            ),
-          )
+              ),
+            ],
+          ),
+        )
         : buildAddForm();
   }
 
@@ -1057,10 +1065,11 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
       children: <Widget>[
         // YOUR UI EXACTLY AS BEFORE — NO CHANGE
         TextFormField(
+          controller: gramController,
           keyboardType: TextInputType.number,
-          initialValue: goldrateList[0]['gram'].toString(),
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Rate in gram' : null,
+          // initialValue: goldrateList[0]['gram'].toString(),
+          validator:
+              (value) => value == null || value.isEmpty ? 'Rate in gram' : null,
           onChanged: (value) => goldrateCalculate(double.tryParse(value)),
           onSaved: (value) {
             _goldRate = _goldRate.copyWith(
@@ -1073,8 +1082,9 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
         TextFormField(
           controller: pavanController,
           keyboardType: TextInputType.number,
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Rate in 8 gram' : null,
+          validator:
+              (value) =>
+                  value == null || value.isEmpty ? 'Rate in 8 gram' : null,
           onSaved: (value) {
             _goldRate = _goldRate.copyWith(
               pavan: double.tryParse(value ?? "0") ?? 0,
@@ -1112,34 +1122,36 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
                 },
                 decoration: inputBorder("Down"),
               ),
-            )
+            ),
           ],
         ),
 
         TextFormField(
           controller: gram18Controller,
           keyboardType: TextInputType.number,
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Rate in 18 gram' : null,
+          validator:
+              (value) =>
+                  value == null || value.isEmpty ? 'Rate in 18 gram' : null,
           onSaved: (value) {
             _goldRate = _goldRate.copyWith(
               gram18: double.tryParse(value ?? "0") ?? 0,
             );
           },
-          decoration: inputBorder("Enter rate in 18 gram"),
+          decoration: inputBorder("Enter rate in 18 ct"),
         ),
 
         Container(
           width: MediaQuery.of(context).size.width * .4,
           height: MediaQuery.of(context).size.height * .06,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: useColor.homeIconColor),
+            borderRadius: BorderRadius.circular(15),
+            color: useColor.homeIconColor,
+          ),
           child: TextButton(
             onPressed: () => _saveForm(goldrateList[0]['id']),
             child: const Text('Update', style: TextStyle(color: Colors.white)),
           ),
-        )
+        ),
       ],
     );
   }
@@ -1166,9 +1178,11 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
                     TextFormField(
                       controller: gramController,
                       keyboardType: TextInputType.number,
-                      validator: (value) => value == null || value.isEmpty
-                          ? 'Rate in gram'
-                          : null,
+                      validator:
+                          (value) =>
+                              value == null || value.isEmpty
+                                  ? 'Rate in gram'
+                                  : null,
                       onChanged: (value) {
                         goldrateCalculate(double.tryParse(value));
                       },
@@ -1177,9 +1191,11 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
                     TextFormField(
                       controller: pavanController,
                       keyboardType: TextInputType.number,
-                      validator: (value) => value == null || value.isEmpty
-                          ? 'Rate in 8 gram'
-                          : null,
+                      validator:
+                          (value) =>
+                              value == null || value.isEmpty
+                                  ? 'Rate in 8 gram'
+                                  : null,
                       decoration: inputBorder('Enter rate 8 in gram'),
                     ),
                     Row(
@@ -1206,9 +1222,11 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
                     TextFormField(
                       controller: gram18Controller,
                       keyboardType: TextInputType.number,
-                      validator: (value) => value == null || value.isEmpty
-                          ? 'Rate in 18 gram'
-                          : null,
+                      validator:
+                          (value) =>
+                              value == null || value.isEmpty
+                                  ? 'Rate in 18 gram'
+                                  : null,
                       decoration: inputBorder("Enter rate in 18 gram"),
                     ),
                     Container(
@@ -1233,9 +1251,10 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
                             updateTime: "",
                           );
 
-                          Provider.of<Goldrate>(context, listen: false)
-                              .create(_goldRate)
-                              .then((_) {
+                          Provider.of<Goldrate>(
+                            context,
+                            listen: false,
+                          ).create(_goldRate).then((_) {
                             initialise();
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -1244,10 +1263,12 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
                             );
                           });
                         },
-                        child: const Text('Add Goldrate',
-                            style: TextStyle(color: Colors.white)),
+                        child: const Text(
+                          'Add Goldrate',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -1259,10 +1280,12 @@ class _GoldRateScreenState extends State<GoldRateScreen> {
   }
 
   InputDecoration inputBorder(String text) => InputDecoration(
-        focusedBorder:
-            const OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
-        enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black)),
-        labelText: text,
-      );
+    focusedBorder: const OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.red),
+    ),
+    enabledBorder: const OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.black),
+    ),
+    labelText: text,
+  );
 }
